@@ -10,6 +10,7 @@ public class MainFrame extends JFrame implements Runnable {
         int frameWidth = 500;
         int frameHeight = 500;
         p = new DrawPanel();
+        this.addKeyListener(p);
         this.add(p);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(frameWidth, frameHeight);
