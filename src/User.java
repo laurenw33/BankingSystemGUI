@@ -1,23 +1,23 @@
 public class User {
-    private int balance = 0;
     private String username;
-    private int pin;
+    private String password;
 
-    public User(String username, int pin) {
-        if (String.valueOf(pin).length() == 4) {
-            this.username = username;
-            this.pin = pin;
-            this.balance = 0;
-        }
+    private int balance;
+
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+        this.balance = 0;
     }
 
-    public void setPin(int pinNew) {
-        pin = pinNew;
+    public void setPin(String passNew) {
+        password = passNew;
     }
 
 
-    public boolean verifyPin(int enteredPin) {
-        return pin == enteredPin;
+    public boolean verifyPin(String enteredPass) {
+        return password.equals(enteredPass);
     }
 
     public void deposit(int deposit)

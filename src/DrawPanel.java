@@ -12,27 +12,29 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     boolean drawRectangle = true;
 
     // rectangles
-    Rectangle login;
-    Rectangle admin;
-    Rectangle newUser;
-    Rectangle newAdmin;
-    Rectangle deposit;
-    Rectangle withdraw;
-    Rectangle usernameBox;
-    Rectangle passwordBox;
+    private Rectangle login;
+    private Rectangle admin;
+    private Rectangle newUser;
+    private Rectangle newAdmin;
+    private Rectangle deposit;
+    private Rectangle withdraw;
+    private Rectangle usernameBox;
+    private Rectangle passwordBox;
 
     // text
-    String username;
-    String password;
+    private String username;
+    private String password;
 
     // booleans
-    boolean showLogIn;
-    boolean showAdmin;
-    boolean highlight;
-    boolean usernameDone;
-    boolean passwordDone;
-    boolean doUser;
-    boolean doPass;
+    private boolean showLogIn;
+    private boolean showAdmin;
+    private boolean highlight;
+    private boolean usernameDone;
+    private boolean passwordDone;
+    private boolean doUser;
+    private boolean doPass;
+    private boolean userComplete;
+    private boolean passComplete;
 
     public DrawPanel() {
         this.addMouseListener(this);
@@ -52,10 +54,11 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
 
         showLogIn = false;
         showAdmin = false;
-
-
         doUser = false;
         doPass = false;
+        userComplete = false;
+        passComplete = false;
+
     }
 
     protected void paintComponent(Graphics g) {
@@ -76,15 +79,25 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             g.drawString("password", 90, 222);
             g.drawString(username, 95, 190);
             g.drawString(password, 95, 250);
-            g.drawString("Click the boxes to log in.", 90, 320);
-            g.drawString("Click one box at a time.", 90, 340);
+            g.drawString("Click the boxes to log in.", 90, 300);
+            g.drawString("Click one box at a time.", 90, 320);
+            g.drawString("Hit enter when you're done.", 90, 340);
             if (doUser) {
-                g.drawString("Typing...", 332, 163);
+                g.drawString("Typing...", 322, 163);
                 doPass = false;
             }
             if (doPass) {
-                g.drawString("Typing...", 325, 222);
+                g.drawString("Typing...", 322, 222);
                 doUser = false;
+            }
+            if (userComplete) {
+                g.drawString("Entered!", 322, 163);
+            }
+            if (passComplete) {
+                g.drawString("Entered!", 322, 222);
+            }
+            if (userComplete && passComplete) {
+
             }
         }
         if (showAdmin) {
@@ -117,11 +130,6 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         }
     }
 
-    public void hideRectangle() {
-        drawRectangle = false;
-        repaint(); // Ensure the component is redrawn without the rectangle
-    }
-
     public void mouseReleased(MouseEvent e) { }
     public void mouseEntered(MouseEvent e) { }
     public void mouseExited(MouseEvent e) { }
@@ -136,8 +144,9 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     public void keyPressed(KeyEvent e) {
         if (doUser) {
             if (e.getKeyCode() == 8) {
-                String temp = username.substring(0, username.length() - 1);
-                username = temp;
+                if (username.length() > 0) { // Add safety
+                    username = username.substring(0, username.length() - 1);
+                }
             } else {
                 username += e.getKeyChar();
             }
@@ -150,14 +159,16 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 password += e.getKeyChar();
             }
         }
-        if (!usernameDone && doUser) {
-            if (e.getKeyCode() == 16) {
+        if (doUser) {
+            if (e.getKeyCode() == 10) {
                 doUser = false;
+                userComplete = true;
             }
         }
-        if (!passwordDone && doPass) {
-            if (e.getKeyCode() == 16) {
+        if (doPass) {
+            if (e.getKeyCode() == 10) {
                 doPass = false;
+                passComplete = true;
             }
         }
 

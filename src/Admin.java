@@ -1,9 +1,9 @@
 public class Admin extends User {
     private String username;
-    private int pin;
+    private String password;
 
-    public Admin(String username, int pin) {
-        super(username, pin);
+    public Admin(String username, String password) {
+        super(username, password);
     }
 
     public boolean verifyAdmin(String admin)
@@ -11,8 +11,8 @@ public class Admin extends User {
         return username.equals(admin);
     }
 
-    public boolean verifyPin(int enteredPin) {
-        return super.verifyPin(enteredPin);
+    public boolean verifyPin(String enteredPass) {
+        return super.verifyPin(enteredPass);
     }
 
     public void updateBalance(User user, int newBalance) {
@@ -25,14 +25,9 @@ public class Admin extends User {
         }
     }
 
-    public void updatePin(User user, int newPin) {
-        if (String.valueOf(newPin).length() == 4) {
-            user.setPin(newPin);
-            System.out.println("Pin updated successfully to: " + newPin);
-        }
-        else {
-            System.out.println("Error: Pin must be exactly four digits.");
-        }
+    public void updatePin(User user, String newPass) {
+        user.setPin(newPass);
+        System.out.println("Pin updated successfully to: " + newPass);
     }
 
 }
