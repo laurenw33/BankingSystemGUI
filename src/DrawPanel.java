@@ -9,32 +9,39 @@ import java.util.ArrayList;
 class DrawPanel extends JPanel implements MouseListener, KeyListener {
 
     ArrayList<User> users;
-    boolean drawRectangle = true;
+    User u;
 
     // rectangles
-    private Rectangle login;
-    private Rectangle admin;
-    private Rectangle newUser;
-    private Rectangle newAdmin;
-    private Rectangle deposit;
-    private Rectangle withdraw;
-    private Rectangle usernameBox;
-    private Rectangle passwordBox;
+    Rectangle login;
+    Rectangle admin;
+    Rectangle newUser;
+    Rectangle newAdmin;
+    Rectangle usernameBox;
+    Rectangle passwordBox;
+
+    Rectangle deposit;
+    Rectangle withdraw;
+    Rectangle balance;
 
     // text
-    private String username;
-    private String password;
+    String username;
+    String password;
 
     // booleans
-    private boolean showLogIn;
-    private boolean showAdmin;
-    private boolean highlight;
-    private boolean usernameDone;
-    private boolean passwordDone;
-    private boolean doUser;
-    private boolean doPass;
-    private boolean userComplete;
-    private boolean passComplete;
+    boolean showLogIn;
+    boolean showAdmin;
+    boolean highlight;
+    boolean usernameDone;
+    boolean passwordDone;
+    boolean doUser;
+    boolean doPass;
+    boolean userComplete;
+    boolean passComplete;
+    boolean activateUser;
+    boolean doBalance;
+    boolean doWithdraw;
+    boolean doDeposit;
+    boolean goBackUser;
 
     public DrawPanel() {
         this.addMouseListener(this);
@@ -44,8 +51,10 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         passwordBox = new Rectangle(90, 230, 290, 30);
         newAdmin = new Rectangle();
         newUser = new Rectangle();
-        deposit = new Rectangle();
-        withdraw = new Rectangle();
+
+        deposit = new Rectangle(150, 150, 200, 50);
+        withdraw = new Rectangle(150, 220, 200, 50);
+        balance = new Rectangle(150, 290, 200, 50);
 
         username = "";
         password = "";
@@ -56,8 +65,11 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         showAdmin = false;
         doUser = false;
         doPass = false;
+        usernameDone = false;
+        passwordDone = false;
         userComplete = false;
         passComplete = false;
+        activateUser = false;
 
     }
 
@@ -83,11 +95,11 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             g.drawString("Click one box at a time.", 90, 320);
             g.drawString("Hit enter when you're done.", 90, 340);
             if (doUser) {
-                g.drawString("Typing...", 322, 163);
+                g.drawString("Typing...", 332, 163);
                 doPass = false;
             }
             if (doPass) {
-                g.drawString("Typing...", 322, 222);
+                g.drawString("Typing...", 325, 222);
                 doUser = false;
             }
             if (userComplete) {
@@ -96,9 +108,20 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (passComplete) {
                 g.drawString("Entered!", 322, 222);
             }
-            if (userComplete && passComplete) {
-
+            if (usernameDone && passwordDone) {
+                showLogIn = false;
+                u = new User(username, password);
+                users.add(u);
+                activateUser = true;
             }
+        }
+        if (activateUser) {
+            g2d.drawRect(deposit.x, deposit.y, deposit.width, deposit.height);
+            g.drawString("Deposit", 210, 180);
+            g2d.drawRect(withdraw.x, withdraw.y, withdraw.width, withdraw.height);
+            g.drawString("Withdraw", 205, 250);
+            g2d.drawRect(balance.x, balance.y, balance.width, balance.height);
+            g.drawString("Balance", 210, 320);
         }
         if (showAdmin) {
 
@@ -127,6 +150,9 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (passwordBox.contains(clicked)) {
                 doPass = !doPass;
             }
+            if (withdraw.contains(clicked)) {
+
+            }
         }
     }
 
@@ -144,16 +170,15 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     public void keyPressed(KeyEvent e) {
         if (doUser) {
             if (e.getKeyCode() == 8) {
-                if (username.length() > 0) { // Add safety
-                    username = username.substring(0, username.length() - 1);
-                }
+                String temp = username.substring(0, username.length() - 1);
+                username = temp;
             } else {
                 username += e.getKeyChar();
             }
         }
         if (doPass) {
             if (e.getKeyCode() == 8) {
-                String temp = username.substring(0, username.length() - 1);
+                String temp = password.substring(0, password.length() - 1);
                 password = temp;
             } else {
                 password += e.getKeyChar();
@@ -163,12 +188,14 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (e.getKeyCode() == 10) {
                 doUser = false;
                 userComplete = true;
+                usernameDone = true;
             }
         }
         if (doPass) {
             if (e.getKeyCode() == 10) {
                 doPass = false;
-                passComplete = true;
+                userComplete = true;
+                passwordDone = true;
             }
         }
 
