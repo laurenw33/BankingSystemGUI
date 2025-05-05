@@ -18,10 +18,12 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     Rectangle newAdmin;
     Rectangle usernameBox;
     Rectangle passwordBox;
+    Rectangle createNewAccount;
 
     Rectangle deposit;
     Rectangle withdraw;
     Rectangle balance;
+    Rectangle returnToLogIn;
 
     // text
     String username;
@@ -42,6 +44,8 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     boolean doWithdraw;
     boolean doDeposit;
     boolean goBackUser;
+    boolean verifyCreateNewAcc;
+    boolean verifiedClick;
 
     public DrawPanel() {
         this.addMouseListener(this);
@@ -51,7 +55,9 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         passwordBox = new Rectangle(90, 230, 290, 30);
         newAdmin = new Rectangle();
         newUser = new Rectangle();
+        createNewAccount = new Rectangle(110, 150, 250, 70);
 
+        returnToLogIn = new Rectangle(150, 80, 200, 50);
         deposit = new Rectangle(150, 150, 200, 50);
         withdraw = new Rectangle(150, 220, 200, 50);
         balance = new Rectangle(150, 290, 200, 50);
@@ -70,7 +76,12 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         userComplete = false;
         passComplete = false;
         activateUser = false;
-
+        verifyCreateNewAcc = false;
+        verifiedClick = false;
+        doBalance = false;
+        doWithdraw = false;
+        doDeposit = false;
+        goBackUser = false;
     }
 
     protected void paintComponent(Graphics g) {
@@ -109,19 +120,55 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 g.drawString("Entered!", 322, 222);
             }
             if (usernameDone && passwordDone) {
-                showLogIn = false;
-                u = new User(username, password);
-                users.add(u);
-                activateUser = true;
+                boolean hasUser = false;
+                boolean hasPass = false;
+                if (!users.isEmpty()) {
+                    for (User u : users) {
+                        if (u.getUsername().equals(username)) {
+                            hasUser = true;
+                            if (u.getPassword().equals(password)) {
+                                showLogIn = false;
+                                activateUser = true;
+                                hasPass = true;
+                            }
+                        }
+                        if (hasUser && hasPass) {
+                            break;
+                        }
+                    }
+                }
+                else {
+                    showLogIn = false;
+                    verifyCreateNewAcc = true;
+                }
+
             }
         }
+        if (verifyCreateNewAcc) {
+            g2d.drawRect(createNewAccount.x, createNewAccount.y, createNewAccount.width, createNewAccount.height);
+            g.drawString("We couldn't find your account.", 80, 130);
+            g.drawString("Create a new account?", 118, 190);
+        }
+        if (verifiedClick) {
+            g.drawString("Logged in as: " + username, 5, 20);
+            verifyCreateNewAcc = false;
+            u = new User(username, password);
+            users.add(u);
+            activateUser = true;
+        }
         if (activateUser) {
+            g2d.drawRect(returnToLogIn.x, returnToLogIn.y, returnToLogIn.width, returnToLogIn.height);
+            g.drawString("Return to login", 168, 110);
             g2d.drawRect(deposit.x, deposit.y, deposit.width, deposit.height);
             g.drawString("Deposit", 210, 180);
             g2d.drawRect(withdraw.x, withdraw.y, withdraw.width, withdraw.height);
             g.drawString("Withdraw", 205, 250);
             g2d.drawRect(balance.x, balance.y, balance.width, balance.height);
             g.drawString("Balance", 210, 320);
+        }
+        if (doDeposit) {
+            activateUser = false;
+
         }
         if (showAdmin) {
 
@@ -151,7 +198,21 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 doPass = !doPass;
             }
             if (withdraw.contains(clicked)) {
+                doWithdraw = true;
+            }
+            if (balance.contains(clicked)) {
+                doBalance = true;
+            }
+            if (deposit.contains(clicked)){
+                doDeposit = true;
+            }
+            if (returnToLogIn.contains(clicked)) {
 
+            }
+            if (verifyCreateNewAcc) {
+                if (createNewAccount.contains(clicked)) {
+                    verifiedClick = true;
+                }
             }
         }
     }
