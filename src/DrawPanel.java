@@ -23,11 +23,17 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     Rectangle deposit;
     Rectangle withdraw;
     Rectangle balance;
-    Rectangle returnToLogIn;
+    Rectangle logOutButton;
+
+    Rectangle depositBox;
 
     // text
     String username;
     String password;
+    String depositTemp;
+
+    // int
+    int depositAmt;
 
     // booleans
     boolean showLogIn;
@@ -43,7 +49,8 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     boolean doBalance;
     boolean doWithdraw;
     boolean doDeposit;
-    boolean goBackUser;
+    boolean depositDone;
+    boolean logOut;
     boolean verifyCreateNewAcc;
     boolean verifiedClick;
 
@@ -57,13 +64,18 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         newUser = new Rectangle();
         createNewAccount = new Rectangle(110, 150, 250, 70);
 
-        returnToLogIn = new Rectangle(150, 80, 200, 50);
+        logOutButton = new Rectangle(150, 80, 200, 50);
         deposit = new Rectangle(150, 150, 200, 50);
         withdraw = new Rectangle(150, 220, 200, 50);
         balance = new Rectangle(150, 290, 200, 50);
 
+        depositBox = new Rectangle(78, 160, 290, 30);
+
         username = "";
         password = "";
+        depositTemp = "";
+
+        depositAmt = 0;
 
         users = new ArrayList<>();
 
@@ -81,7 +93,8 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         doBalance = false;
         doWithdraw = false;
         doDeposit = false;
-        goBackUser = false;
+        depositDone = false;
+        logOut = false;
     }
 
     protected void paintComponent(Graphics g) {
@@ -96,6 +109,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         g.drawString("Admin", 310, 400);
 
         if (showLogIn) {
+            u = null;
             g2d.drawRect(usernameBox.x, usernameBox.y, usernameBox.width, usernameBox.height);
             g.drawString("username", 90, 163);
             g2d.drawRect(passwordBox.x, passwordBox.y, passwordBox.width, passwordBox.height);
@@ -157,7 +171,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             activateUser = true;
         }
         if (activateUser) {
-            g2d.drawRect(returnToLogIn.x, returnToLogIn.y, returnToLogIn.width, returnToLogIn.height);
+            g2d.drawRect(logOutButton.x, logOutButton.y, logOutButton.width, logOutButton.height);
             g.drawString("Return to login", 168, 110);
             g2d.drawRect(deposit.x, deposit.y, deposit.width, deposit.height);
             g.drawString("Deposit", 210, 180);
@@ -168,13 +182,35 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         }
         if (doDeposit) {
             activateUser = false;
+            g.drawString("How much would you like to deposit?", 78, 110);
+            g.drawString("ONLY INCLUDE NUMBERS!!", 78, 120);
+            g2d.drawRect(depositBox.x, depositBox.y, depositBox.width, depositBox.height);
+            g.drawString(depositTemp, 82, 170);
+            u.deposit(depositAmt);
+            if (depositDone) {
 
+            }
         }
         if (showAdmin) {
+            activateUser = false;
 
         }
-
+        if (logOut) {
+            activateUser = false;
+            doUser = false;
+            doPass = false;
+            usernameDone = false;
+            passwordDone = false;
+            userComplete = false;
+            passComplete = false;
+            verifyCreateNewAcc = false;
+            verifiedClick = false;
+            showLogIn = true;
+            username = "";
+            password = "";
+        }
         if (highlight) {
+            activateUser = false;
 
         }
     }
@@ -190,7 +226,6 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (admin.contains(clicked)) {
                 showAdmin = !showAdmin;
             }
-
             if (usernameBox.contains(clicked)) {
                 doUser = !doUser;
             }
@@ -206,8 +241,8 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (deposit.contains(clicked)){
                 doDeposit = true;
             }
-            if (returnToLogIn.contains(clicked)) {
-
+            if (logOutButton.contains(clicked)) {
+                logOut = true;
             }
             if (verifyCreateNewAcc) {
                 if (createNewAccount.contains(clicked)) {
@@ -259,6 +294,16 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 passwordDone = true;
             }
         }
+        if (doDeposit) {
+            if (e.getKeyCode() == 8) {
+                String temp = depositTemp.substring(0, depositTemp.length() - 1);
+                depositTemp = temp;
+            } else {
+                depositTemp += e.getKeyChar();
+            }
+            depositAmt = Integer.parseInt(depositTemp);
+        }
+
 
 
     }
