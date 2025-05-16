@@ -69,7 +69,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         withdraw = new Rectangle(150, 220, 200, 50);
         balance = new Rectangle(150, 290, 200, 50);
 
-        depositBox = new Rectangle(78, 160, 290, 30);
+        depositBox = new Rectangle(78, 150, 290, 30);
 
         username = "";
         password = "";
@@ -109,7 +109,6 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         g.drawString("Admin", 310, 400);
 
         if (showLogIn) {
-            u = null;
             g2d.drawRect(usernameBox.x, usernameBox.y, usernameBox.width, usernameBox.height);
             g.drawString("username", 90, 163);
             g2d.drawRect(passwordBox.x, passwordBox.y, passwordBox.width, passwordBox.height);
@@ -182,13 +181,19 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         }
         if (doDeposit) {
             activateUser = false;
-            g.drawString("How much would you like to deposit?", 78, 110);
-            g.drawString("ONLY INCLUDE NUMBERS!!", 78, 120);
+            verifiedClick = false;
+            g.drawString("How much would you like to deposit?", 75, 110);
+            g.drawString("Click the box to begin: ", 78, 130);
             g2d.drawRect(depositBox.x, depositBox.y, depositBox.width, depositBox.height);
             g.drawString(depositTemp, 82, 170);
-            u.deposit(depositAmt);
+            int i = 0;
+            String temp = "";
             if (depositDone) {
-
+                while (i < 1) {
+                    temp = u.deposit(depositAmt);
+                    i++;
+                }
+                g.drawString(temp, 75, 200);
             }
         }
         if (showAdmin) {
@@ -196,16 +201,21 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
 
         }
         if (logOut) {
-            activateUser = false;
+            showLogIn = true;
+            showAdmin = false;
             doUser = false;
             doPass = false;
             usernameDone = false;
             passwordDone = false;
             userComplete = false;
             passComplete = false;
+            activateUser = false;
             verifyCreateNewAcc = false;
             verifiedClick = false;
-            showLogIn = true;
+            doBalance = false;
+            doWithdraw = false;
+            doDeposit = false;
+            depositDone = false;
             username = "";
             password = "";
         }
@@ -238,8 +248,10 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (balance.contains(clicked)) {
                 doBalance = true;
             }
-            if (deposit.contains(clicked)){
-                doDeposit = true;
+            if (activateUser) {
+                if (deposit.contains(clicked)) {
+                    doDeposit = true;
+                }
             }
             if (logOutButton.contains(clicked)) {
                 logOut = true;
@@ -265,7 +277,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (doUser) {
-            if (e.getKeyCode() == 8) {
+            if (e.getKeyCode() == 8) { // backspace
                 String temp = username.substring(0, username.length() - 1);
                 username = temp;
             } else {
@@ -273,7 +285,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             }
         }
         if (doPass) {
-            if (e.getKeyCode() == 8) {
+            if (e.getKeyCode() == 8) { // backspace
                 String temp = password.substring(0, password.length() - 1);
                 password = temp;
             } else {
@@ -281,30 +293,35 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             }
         }
         if (doUser) {
-            if (e.getKeyCode() == 10) {
+            if (e.getKeyCode() == 10) { // enter
                 doUser = false;
                 userComplete = true;
                 usernameDone = true;
             }
         }
         if (doPass) {
-            if (e.getKeyCode() == 10) {
+            if (e.getKeyCode() == 10) { // enter
                 doPass = false;
                 userComplete = true;
                 passwordDone = true;
             }
         }
         if (doDeposit) {
-            if (e.getKeyCode() == 8) {
+            if (e.getKeyCode() == 8) { // backspace
                 String temp = depositTemp.substring(0, depositTemp.length() - 1);
                 depositTemp = temp;
             } else {
-                depositTemp += e.getKeyChar();
+                if (Character.isDigit(e.getKeyChar())) { // can only type int
+                    depositTemp += e.getKeyChar();
+                }
             }
             depositAmt = Integer.parseInt(depositTemp);
         }
-
-
+        if (doDeposit) {
+            if (e.getKeyCode() == 10) { // enter
+                depositDone = true;
+            }
+        }
 
     }
 

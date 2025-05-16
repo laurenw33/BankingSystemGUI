@@ -28,14 +28,14 @@ public class User {
         return password.equals(enteredPass);
     }
 
-    public void deposit(int deposit)
+    public String deposit(int deposit)
     {
         if (deposit >= 0) {
             balance += deposit;
-            System.out.println("Your balance after depositing " + deposit + " dollars is: $" + balance);
+            return "Balance: $" + balance;
         }
         else {
-            System.out.println("You must deposit a positive value!");
+            return "You must deposit a positive value!";
         }
     }
 
