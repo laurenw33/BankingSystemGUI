@@ -18,6 +18,8 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     Rectangle newAdmin;
     Rectangle usernameBox;
     Rectangle passwordBox;
+    Rectangle adminNameBox;
+    Rectangle adminPassBox;
     Rectangle createNewAccount;
 
     Rectangle deposit;
@@ -27,10 +29,15 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
 
     Rectangle depositBox;
 
+    Rectangle backButton;
+
     // text
     String username;
     String password;
+    String adminUser;
+    String adminPass;
     String depositTemp;
+    String depositFinal;
 
     // int
     int depositAmt;
@@ -43,13 +50,22 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     boolean passwordDone;
     boolean doUser;
     boolean doPass;
+    boolean doAdmin;
+    boolean doAdminUser;
+    boolean doAdminPass;
     boolean userComplete;
     boolean passComplete;
     boolean activateUser;
+
     boolean doBalance;
+
     boolean doWithdraw;
+
     boolean doDeposit;
     boolean depositDone;
+    boolean depositTyping;
+    boolean addDeposit;
+
     boolean logOut;
     boolean verifyCreateNewAcc;
     boolean verifiedClick;
@@ -57,19 +73,23 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     public DrawPanel() {
         this.addMouseListener(this);
         login = new Rectangle(50, 370, 160, 50);
-        admin= new Rectangle(265, 370, 160, 50);
+        admin = new Rectangle(265, 370, 160, 50);
         usernameBox = new Rectangle(90, 170, 290, 30);
         passwordBox = new Rectangle(90, 230, 290, 30);
         newAdmin = new Rectangle();
         newUser = new Rectangle();
         createNewAccount = new Rectangle(110, 150, 250, 70);
+        adminNameBox = new Rectangle(90, 170, 290, 30);
+        adminPassBox = new Rectangle(90, 230, 290, 30);
 
         logOutButton = new Rectangle(150, 80, 200, 50);
         deposit = new Rectangle(150, 150, 200, 50);
         withdraw = new Rectangle(150, 220, 200, 50);
         balance = new Rectangle(150, 290, 200, 50);
 
-        depositBox = new Rectangle(78, 150, 290, 30);
+        depositBox = new Rectangle(70, 146, 290, 30);
+
+        backButton = new Rectangle(370, 330, 70, 30);
 
         username = "";
         password = "";
@@ -78,6 +98,10 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         depositAmt = 0;
 
         users = new ArrayList<>();
+
+        doAdmin = false;
+        doAdminUser = false;
+        doAdminPass = false;
 
         showLogIn = false;
         showAdmin = false;
@@ -93,12 +117,14 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         doBalance = false;
         doWithdraw = false;
         doDeposit = false;
+        depositTyping = false;
         depositDone = false;
+        addDeposit = true;
         logOut = false;
     }
 
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+        super.paintComponent(g); // user chooses if they want to sign in to user or admin
         Graphics2D g2d = (Graphics2D) g;
         g.setFont(new Font("Courier New", Font.BOLD, 18));
 
@@ -118,21 +144,21 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             g.drawString("Click the boxes to log in.", 90, 300);
             g.drawString("Click one box at a time.", 90, 320);
             g.drawString("Hit enter when you're done.", 90, 340);
-            if (doUser) {
+            if (doUser) { // user
                 g.drawString("Typing...", 332, 163);
                 doPass = false;
             }
-            if (doPass) {
+            if (doPass) { // user
                 g.drawString("Typing...", 325, 222);
                 doUser = false;
             }
-            if (userComplete) {
+            if (userComplete) { // user
                 g.drawString("Entered!", 322, 163);
             }
-            if (passComplete) {
+            if (passComplete) { // user
                 g.drawString("Entered!", 322, 222);
             }
-            if (usernameDone && passwordDone) {
+            if (usernameDone && passwordDone) { // user
                 boolean hasUser = false;
                 boolean hasPass = false;
                 if (!users.isEmpty()) {
@@ -182,18 +208,22 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         if (doDeposit) {
             activateUser = false;
             verifiedClick = false;
-            g.drawString("How much would you like to deposit?", 75, 110);
-            g.drawString("Click the box to begin: ", 78, 130);
+            g.drawString("How much would you like to deposit?", 70, 110);
+            g.drawString("Click the box to begin: ", 70, 130);
+            g2d.drawRect(backButton.x, backButton.y, backButton.width, backButton.height);
+            g.drawString("Back", 380, 350);
             g2d.drawRect(depositBox.x, depositBox.y, depositBox.width, depositBox.height);
-            g.drawString(depositTemp, 82, 170);
-            int i = 0;
-            String temp = "";
+            g.drawString(depositTemp, 74, 170);
+            if (depositTyping) {
+                g.drawString("Typing...", 70, 195);
+            }
             if (depositDone) {
-                while (i < 1) {
-                    temp = u.deposit(depositAmt);
-                    i++;
+                depositTyping = false;
+                if (addDeposit) {
+                    depositFinal = u.deposit(depositAmt);
+                    addDeposit = false;
                 }
-                g.drawString(temp, 75, 200);
+                g.drawString(depositFinal, 70, 195);
             }
         }
         if (showAdmin) {
@@ -259,6 +289,11 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (verifyCreateNewAcc) {
                 if (createNewAccount.contains(clicked)) {
                     verifiedClick = true;
+                }
+            }
+            if (doDeposit) {
+                if (depositBox.contains(clicked)) {
+                    depositTyping = !depositTyping;
                 }
             }
         }

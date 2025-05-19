@@ -15,19 +15,17 @@ public class Admin extends User {
         return super.verifyPin(enteredPass);
     }
 
-    public void updateBalance(User user, int newBalance) {
+    public String updateBalance(User user, int newBalance) {
         if (newBalance >= 0) {
             user.setBalance(newBalance);
-            System.out.println("Your new balance is: $" + newBalance);
+            return "Your new balance is: $" + newBalance;
         }
-        else {
-            System.out.println("You must enter a positive value!");
-        }
+        return "You must enter a positive value!";
     }
 
-    public void updatePin(User user, String newPass) {
+    public String updatePin(User user, String newPass) {
         user.setPin(newPass);
-        System.out.println("Pin updated successfully to: " + newPass);
+        return "Pin updated successfully to: " + newPass;
     }
 
 }
