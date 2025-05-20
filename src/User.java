@@ -39,25 +39,23 @@ public class User {
         }
     }
 
-    public void withdraw(int withdraw)
+    public String withdraw(int withdraw)
     {
         if (withdraw <= balance) {
             if (withdraw >= 0) {
                 balance -= withdraw;
-                System.out.println("Your balance after withdrawing " + withdraw + " dollars is: $" + balance);
+                return "You withdrew: $" + withdraw + "New balance: $" + balance;
             }
             else {
-                System.out.println("You must deposit a positive value!");
+                return "You must deposit a positive value!";
             }
         }
-        else {
-            System.out.println("Insufficient balance. Your current balance is: $" + balance);
-        }
+        return "Insufficient balance - Current balance: $" + balance;
     }
 
-    public void balance()
+    public String balance()
     {
-        System.out.println("Your balance is: $" + balance);
+        return "Your balance is: $" + balance;
     }
 
     public void setBalance(int balanceNew) {

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 class DrawPanel extends JPanel implements MouseListener, KeyListener {
 
     ArrayList<User> users;
-    User u;
+    User user;
 
     // rectangles
     Rectangle login;
@@ -28,6 +28,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     Rectangle logOutButton;
 
     Rectangle depositBox;
+    Rectangle withdrawBox;
 
     Rectangle backButton;
 
@@ -38,9 +39,12 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     String adminPass;
     String depositTemp;
     String depositFinal;
+    String withdrawTemp;
+    String withdrawFinal;
 
     // int
     int depositAmt;
+    int withdrawAmt;
 
     // booleans
     boolean showLogIn;
@@ -60,6 +64,9 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     boolean doBalance;
 
     boolean doWithdraw;
+    boolean withdrawTyping;
+    boolean withdrawDone;
+    boolean addWithdraw;
 
     boolean doDeposit;
     boolean depositDone;
@@ -69,6 +76,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     boolean logOut;
     boolean verifyCreateNewAcc;
     boolean verifiedClick;
+    boolean goBack;
 
     public DrawPanel() {
         this.addMouseListener(this);
@@ -88,14 +96,18 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         balance = new Rectangle(150, 290, 200, 50);
 
         depositBox = new Rectangle(70, 146, 290, 30);
+        withdrawBox = new Rectangle(70, 146, 290, 30);
 
         backButton = new Rectangle(370, 330, 70, 30);
 
         username = "";
         password = "";
         depositTemp = "";
+        withdrawTemp = "";
+        withdrawFinal = "";
 
         depositAmt = 0;
+        withdrawAmt = 0;
 
         users = new ArrayList<>();
 
@@ -114,13 +126,21 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         activateUser = false;
         verifyCreateNewAcc = false;
         verifiedClick = false;
+
         doBalance = false;
+
         doWithdraw = false;
+        withdrawTyping = false;
+        withdrawDone = false;
+        addWithdraw = true;
+
         doDeposit = false;
         depositTyping = false;
         depositDone = false;
         addDeposit = true;
+
         logOut = false;
+        goBack = false;
     }
 
     protected void paintComponent(Graphics g) {
@@ -191,11 +211,14 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         if (verifiedClick) {
             g.drawString("Logged in as: " + username, 5, 20);
             verifyCreateNewAcc = false;
-            u = new User(username, password);
-            users.add(u);
+            user = new User(username, password);
+            System.out.println("ran");
+            users.add(user);
+            System.out.println(users);
             activateUser = true;
         }
         if (activateUser) {
+            verifiedClick = false;
             g2d.drawRect(logOutButton.x, logOutButton.y, logOutButton.width, logOutButton.height);
             g.drawString("Return to login", 168, 110);
             g2d.drawRect(deposit.x, deposit.y, deposit.width, deposit.height);
@@ -220,15 +243,57 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (depositDone) {
                 depositTyping = false;
                 if (addDeposit) {
-                    depositFinal = u.deposit(depositAmt);
+                    depositFinal = user.deposit(depositAmt);
                     addDeposit = false;
                 }
                 g.drawString(depositFinal, 70, 195);
+                user.balance();
+            }
+        }
+        if (doBalance) {
+            activateUser = false;
+            verifiedClick = false;
+            g2d.drawRect(backButton.x, backButton.y, backButton.width, backButton.height);
+            g.drawString("Back", 380, 350);
+            g.drawString(user.balance(), 70, 110);
+        }
+        if (doWithdraw) {
+            activateUser = false;
+            verifiedClick = false;
+            g2d.drawRect(backButton.x, backButton.y, backButton.width, backButton.height);
+            g.drawString("Back", 380, 350);
+            g.drawString("How much would you like to withdraw?", 70, 110);
+            g.drawString("Click the box to begin: ", 70, 130);
+            g2d.drawRect(withdrawBox.x, withdrawBox.y, withdrawBox.width, withdrawBox.height);
+            g.drawString(withdrawTemp, 74, 170);
+            if (withdrawTyping) {
+                g.drawString("Typing...", 70, 195);
+            }
+            if (withdrawDone) {
+                withdrawTyping = false;
+                if (addWithdraw) {
+                    withdrawFinal = user.withdraw(withdrawAmt);
+                    System.out.println(withdrawFinal);
+                    addWithdraw = false;
+                }
+                g.drawString(withdrawFinal, 70, 195);
+                user.balance();
             }
         }
         if (showAdmin) {
             activateUser = false;
 
+        }
+        if (goBack) {
+            logOut = false;
+            showAdmin = false;
+            doDeposit = false;
+            doWithdraw = false;
+            doBalance = false;
+            depositDone = false;
+            verifiedClick = false;
+            activateUser = true;
+            goBack = false;
         }
         if (logOut) {
             showLogIn = true;
@@ -272,13 +337,13 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (passwordBox.contains(clicked)) {
                 doPass = !doPass;
             }
-            if (withdraw.contains(clicked)) {
-                doWithdraw = true;
-            }
-            if (balance.contains(clicked)) {
-                doBalance = true;
-            }
             if (activateUser) {
+                if (withdraw.contains(clicked)) {
+                    doWithdraw = true;
+                }
+                if (balance.contains(clicked)) {
+                    doBalance = true;
+                }
                 if (deposit.contains(clicked)) {
                     doDeposit = true;
                 }
@@ -294,6 +359,16 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (doDeposit) {
                 if (depositBox.contains(clicked)) {
                     depositTyping = !depositTyping;
+                }
+            }
+            if (doWithdraw) {
+                if (withdrawBox.contains(clicked)) {
+                    withdrawTyping = !withdrawTyping;
+                }
+            }
+            if (doDeposit || doBalance || doWithdraw) { // need to update for all functions
+                if (backButton.contains(clicked)) {
+                    goBack = true;
                 }
             }
         }
@@ -355,6 +430,22 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         if (doDeposit) {
             if (e.getKeyCode() == 10) { // enter
                 depositDone = true;
+            }
+        }
+        if (doWithdraw) {
+            if (e.getKeyCode() == 8) { // backspace
+                String temp = withdrawTemp.substring(0, withdrawTemp.length() - 1);
+                withdrawTemp = temp;
+            } else {
+                if (Character.isDigit(e.getKeyChar())) { // can only type int
+                    withdrawTemp += e.getKeyChar();
+                }
+            }
+            withdrawAmt = Integer.parseInt(withdrawTemp);
+        }
+        if (doWithdraw) {
+            if (e.getKeyCode() == 10) {
+                withdrawDone = true;
             }
         }
 
