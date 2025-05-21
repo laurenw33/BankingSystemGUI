@@ -44,13 +44,13 @@ public class User {
         if (withdraw <= balance) {
             if (withdraw >= 0) {
                 balance -= withdraw;
-                return "You withdrew: $" + withdraw + "New balance: $" + balance;
+                return "Withdrew: $" + withdraw + " Balance: $" + balance;
             }
             else {
                 return "You must deposit a positive value!";
             }
         }
-        return "Insufficient balance - Current balance: $" + balance;
+        return "Insufficient balance. Balance: $" + balance;
     }
 
     public String balance()

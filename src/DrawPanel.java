@@ -194,13 +194,19 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                         if (hasUser && hasPass) {
                             break;
                         }
+                        if (hasUser && !hasPass) {
+                            g.drawString("Incorrect password. Please retry.", 80, 120);
+                        }
+                        else {
+                            showLogIn = false;
+                            verifyCreateNewAcc = true;
+                        }
                     }
                 }
                 else {
                     showLogIn = false;
                     verifyCreateNewAcc = true;
                 }
-
             }
         }
         if (verifyCreateNewAcc) {
@@ -209,16 +215,15 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             g.drawString("Create a new account?", 118, 190);
         }
         if (verifiedClick) {
-            g.drawString("Logged in as: " + username, 5, 20);
             verifyCreateNewAcc = false;
             user = new User(username, password);
-            System.out.println("ran");
             users.add(user);
             System.out.println(users);
             activateUser = true;
         }
         if (activateUser) {
             verifiedClick = false;
+            g.drawString("Logged in as: " + username, 5, 20);
             g2d.drawRect(logOutButton.x, logOutButton.y, logOutButton.width, logOutButton.height);
             g.drawString("Return to login", 168, 110);
             g2d.drawRect(deposit.x, deposit.y, deposit.width, deposit.height);
@@ -273,53 +278,76 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 withdrawTyping = false;
                 if (addWithdraw) {
                     withdrawFinal = user.withdraw(withdrawAmt);
-                    System.out.println(withdrawFinal);
                     addWithdraw = false;
                 }
-                g.drawString(withdrawFinal, 70, 195);
+                g.drawString(withdrawFinal, 60, 195);
                 user.balance();
+                withdrawTemp = "";
             }
         }
         if (showAdmin) {
             activateUser = false;
+            user = new Admin (user.getUsername(), user.getPassword());
 
         }
         if (goBack) {
-            logOut = false;
-            showAdmin = false;
-            doDeposit = false;
-            doWithdraw = false;
-            doBalance = false;
-            depositDone = false;
-            verifiedClick = false;
-            activateUser = true;
-            goBack = false;
+            goBack();
         }
         if (logOut) {
-            showLogIn = true;
-            showAdmin = false;
-            doUser = false;
-            doPass = false;
-            usernameDone = false;
-            passwordDone = false;
-            userComplete = false;
-            passComplete = false;
-            activateUser = false;
-            verifyCreateNewAcc = false;
-            verifiedClick = false;
-            doBalance = false;
-            doWithdraw = false;
-            doDeposit = false;
-            depositDone = false;
-            username = "";
-            password = "";
-        }
-        if (highlight) {
-            activateUser = false;
-
+            logOut();
         }
     }
-    
+
+    public void goBack() {
+        logOut = false;
+        showAdmin = false;
+        doDeposit = false;
+        doWithdraw = false;
+        doBalance = false;
+        depositDone = false;
+        verifiedClick = false;
+        activateUser = true;
+        depositTyping = false;
+        withdrawTyping = false;
+        addDeposit = true;
+        addWithdraw = true;
+        withdrawDone = false;
+        goBack = false;
+        username = "";
+        password = "";
+        depositTemp = "";
+        withdrawTemp = "";
+        withdrawFinal = "";
+    }
+
+    public void logOut() {
+        showAdmin = false;
+        doUser = false;
+        doPass = false;
+        usernameDone = false;
+        passwordDone = false;
+        userComplete = false;
+        passComplete = false;
+        activateUser = false;
+        verifyCreateNewAcc = false;
+        verifiedClick = false;
+        doBalance = false;
+        doWithdraw = false;
+        withdrawTyping = false;
+        withdrawDone = false;
+        addWithdraw = true;
+        doDeposit = false;
+        depositTyping = false;
+        depositDone = false;
+        addDeposit = true;
+        logOut = false;
+        showLogIn = true;
+        username = "";
+        password = "";
+        depositTemp = "";
+        withdrawTemp = "";
+        withdrawFinal = "";
+    }
 
     public void mousePressed(MouseEvent e) {
         Point clicked = e.getPoint();
@@ -373,6 +401,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             }
         }
     }
+
 
     public void mouseReleased(MouseEvent e) { }
     public void mouseEntered(MouseEvent e) { }
