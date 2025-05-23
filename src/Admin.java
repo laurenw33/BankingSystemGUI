@@ -6,9 +6,9 @@ public class Admin extends User {
         super(username, password);
     }
 
-    public boolean verifyAdmin(String admin)
+    public boolean verifyUsername(String admin)
     {
-        return username.equals(admin);
+        return super.verifyUsername(admin);
     }
 
     public boolean verifyPin(String enteredPass) {

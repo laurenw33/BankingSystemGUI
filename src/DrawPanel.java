@@ -10,6 +10,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
 
     ArrayList<User> users;
     User user;
+    Admin admin1;
 
     // rectangles
     Rectangle login;
@@ -32,6 +33,9 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
 
     Rectangle backButton;
 
+    Rectangle updateBalance;
+    Rectangle updatePin;
+
     // text
     String username;
     String password;
@@ -49,7 +53,6 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     // booleans
     boolean showLogIn;
     boolean showAdmin;
-    boolean highlight;
     boolean usernameDone;
     boolean passwordDone;
     boolean doUser;
@@ -101,6 +104,9 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         withdrawBox = new Rectangle(70, 146, 290, 30);
 
         backButton = new Rectangle(370, 330, 70, 30);
+
+        updateBalance = new Rectangle(150, 150, 200, 50);
+        updatePin = new Rectangle(150, 220, 200, 50);
 
         username = "";
         password = "";
@@ -227,6 +233,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         }
         if (activateUser) {
             verifiedClick = false;
+            showLogIn = false;
             g.drawString("Logged in as: " + user.getUsername(), 5, 20);
             g2d.drawRect(logOutButton.x, logOutButton.y, logOutButton.width, logOutButton.height);
             g.drawString("Return to login", 168, 110);
@@ -293,8 +300,10 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         }
         if (showAdmin) {
             activateUser = false;
-            user = new Admin (user.getUsername(), user.getPassword());
             showLogIn = false;
+            doDeposit = false;
+            doBalance = false;
+            doWithdraw = false;
             adminLogIn(g);
         }
         if (goBack) {
@@ -306,6 +315,8 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     }
 
     public void adminLogIn(Graphics g) {
+        doPass = false;
+        doUser = false;
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawRect(adminNameBox.x, adminNameBox.y, adminNameBox.width, adminNameBox.height);
         g.drawString("username", 90, 163);
@@ -316,17 +327,26 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         g.drawString("Re-enter your login credentials.", 90, 300);
         if (doAdminUser) {
             g.drawString("Typing...", 332, 163);
-            doPass = false;
+            doAdminPass = false;
         }
         if (doAdminPass) {
             g.drawString("Typing...", 325, 222);
-            doUser = false;
+            doAdminUser = false;
         }
         if (adminUserComplete) {
             g.drawString("Entered!", 322, 163);
         }
         if (adminPassComplete) {
             g.drawString("Entered!", 322, 222);
+        }
+        if (adminUser.equals(user.getUsername()) && adminPass.equals(user.getPassword())) {
+            admin1 = new Admin (user.getUsername(), user.getPassword());
+            g2d.drawRect(updateBalance.x, updateBalance.y, updateBalance.width, updateBalance.height);
+            g2d.drawRect(updatePin.x, updatePin.y, updatePin.width, updatePin.height);
+
+        }
+        if (adminUser.equals(user.getUsername()) && !adminPass.equals(user.getPassword())) {
+            g.drawString("Incorrect password. Please retry.", 80, 120);
         }
     }
 
@@ -405,11 +425,17 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (passwordBox.contains(clicked)) {
                 doPass = !doPass;
             }
-            if (adminNameBox.contains(clicked)) {
-                doAdminUser = !doAdminUser;
+            if (!showLogIn && !doBalance && !doWithdraw) {
+                if (adminNameBox.contains(clicked)) {
+                    doAdminUser = !doAdminUser;
+                    adminUserComplete = false;
+                }
             }
-            if (adminPassBox.contains(clicked)) {
-                doAdminPass = !doAdminPass;
+            if (!showLogIn && !doBalance && !doWithdraw) {
+                if (adminPassBox.contains(clicked)) {
+                    doAdminPass = !doAdminPass;
+                    adminPassComplete = false;
+                }
             }
             if (activateUser) {
                 if (withdraw.contains(clicked)) {
@@ -480,7 +506,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 passwordDone = true;
             }
         }
-        if (doAdminUser) {
+        if (doAdminUser && !doUser && !doPass) {
             if (e.getKeyCode() == 8) { // backspace
                 String userTemp = adminUser.substring(0, adminUser.length() - 1);
                 adminUser = userTemp;
@@ -488,12 +514,24 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 adminUser += e.getKeyChar();
             }
         }
-        if (doAdminPass) {
+        if (doAdminPass && !doUser && !doPass) {
             if (e.getKeyCode() == 8) { // backspace
                 String passTemp = adminPass.substring(0, adminPass.length() - 1);
                 adminPass = passTemp;
             } else {
                 adminPass += e.getKeyChar();
+            }
+        }
+        if (doAdminUser && !doUser && !doPass) {
+            if (e.getKeyCode() == 10) { // Enter key
+                doAdminUser = false;
+                adminUserComplete = true;
+            }
+        }
+        if (doAdminPass && !doUser && !doPass) {
+            if (e.getKeyCode() == 10) { // Enter key
+                doAdminPass = false;
+                adminPassComplete = true;
             }
         }
         if (doDeposit) {

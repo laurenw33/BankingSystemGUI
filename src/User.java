@@ -23,6 +23,10 @@ public class User {
         password = passNew;
     }
 
+    public boolean verifyUsername(String user)
+    {
+        return username.equals(user);
+    }
 
     public boolean verifyPin(String enteredPass) {
         return password.equals(enteredPass);
@@ -62,8 +66,4 @@ public class User {
         balance = balanceNew;
     }
 
-    public boolean verifyUser(String user)
-    {
-        return username.equals(user);
-    }
 }
