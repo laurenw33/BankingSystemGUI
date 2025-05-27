@@ -23,7 +23,7 @@ public class Admin extends User {
         return "You must enter a positive value!";
     }
 
-    public String updatePin(User user, String newPass) {
+    public String updatePassword(User user, String newPass) {
         user.setPin(newPass);
         return "Pin updated successfully to: " + newPass;
     }
