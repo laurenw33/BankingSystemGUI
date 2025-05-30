@@ -11,31 +11,20 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     ArrayList<User> users;
     User user;
     Admin admin1;
+    UserInterface UI;
 
     // rectangles
     Rectangle login;
     Rectangle admin;
-    Rectangle newUser;
     Rectangle newAdmin;
-    Rectangle usernameBox;
-    Rectangle passwordBox;
     Rectangle adminNameBox;
     Rectangle adminPassBox;
-    Rectangle createNewAccount;
 
-    // user login
-    Rectangle deposit;
-    Rectangle withdraw;
-    Rectangle balance;
-    Rectangle logOutButton;
-
-    // typing boxes for deposit and withdraw
-    Rectangle depositBox;
-    Rectangle withdrawBox;
 
     // back buttons
     Rectangle backButton;
     Rectangle backAdminButton;
+    Rectangle logOutButton;
 
     // admin function boxes
     Rectangle updateBalance;
@@ -44,39 +33,24 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     Rectangle updatePassBox;
 
     // text
-    String username;
-    String password;
     String adminUser;
     String adminPass;
     String newAdminPass;
     String newTempAdminBal;
-    String depositTemp;
-    String depositFinal;
-    String withdrawTemp;
-    String withdrawFinal;
     String newBalanceFinal;
     String newPassFinal;
 
     // int
-    int depositAmt;
-    int withdrawAmt;
     int newAdminBal;
 
     // booleans
-    boolean showLogIn;
+
     boolean showAdmin;
-    boolean usernameDone;
-    boolean passwordDone;
-    boolean doUser;
-    boolean doPass;
     boolean doAdmin;
     boolean doAdminUser;
     boolean doAdminPass;
     boolean adminUserComplete;
     boolean adminPassComplete;
-    boolean userComplete;
-    boolean passComplete;
-    boolean activateUser;
 
     // admin
     boolean updateNewPassword;
@@ -88,20 +62,6 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     boolean updateBalanceOnce;
     boolean updatePasswordOnce;
 
-    // balance
-    boolean doBalance;
-
-    // withdraw
-    boolean doWithdraw;
-    boolean withdrawTyping;
-    boolean withdrawDone;
-    boolean addWithdraw;
-
-    // deposit
-    boolean doDeposit;
-    boolean depositDone;
-    boolean depositTyping;
-    boolean addDeposit;
 
     // back and logout functions
     boolean logOut;
@@ -109,52 +69,33 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
     boolean goAdminBack;
     boolean showIntroMessage;
 
-    boolean verifyCreateNewAcc;
-    boolean verifiedClick;
-
     public DrawPanel() {
         this.addMouseListener(this);
+
+        UI = new UserInterface();
+
         login = new Rectangle(50, 370, 160, 50);
         admin = new Rectangle(265, 370, 160, 50);
-        usernameBox = new Rectangle(90, 170, 290, 30);
-        passwordBox = new Rectangle(90, 230, 290, 30);
         newAdmin = new Rectangle();
-        newUser = new Rectangle();
-        createNewAccount = new Rectangle(110, 150, 250, 70);
         adminNameBox = new Rectangle(90, 170, 290, 30);
         adminPassBox = new Rectangle(90, 230, 290, 30);
 
-        logOutButton = new Rectangle(150, 80, 200, 50);
-        deposit = new Rectangle(150, 150, 200, 50);
-        withdraw = new Rectangle(150, 220, 200, 50);
-        balance = new Rectangle(150, 290, 200, 50);
-
-        depositBox = new Rectangle(70, 146, 290, 30);
-        withdrawBox = new Rectangle(70, 146, 290, 30);
-
         backButton = new Rectangle(370, 330, 70, 30);
         backAdminButton = new Rectangle(370, 330, 70, 30);
+        logOutButton = new Rectangle(150, 80, 200, 50);
 
         updateBalance = new Rectangle(150, 150, 200, 50);
         updatePassword = new Rectangle(150, 220, 200, 50);
         updateBalBox = new Rectangle(70, 146, 290, 30);
         updatePassBox = new Rectangle(70, 146, 290, 30);
 
-        username = "";
-        password = "";
         adminUser = "";
         newTempAdminBal = "";
         newAdminPass = "";
-        depositTemp = "";
-        withdrawTemp = "";
-        withdrawFinal = "";
         adminPass = "";
         newBalanceFinal = "";
         newPassFinal = "";
 
-        depositAmt = 0;
-        withdrawAmt = 0;
-        newAdminBal = 0;
 
         users = new ArrayList<>();
 
@@ -164,17 +105,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         adminUserComplete = false;
         adminPassComplete = false;
 
-        showLogIn = false;
         showAdmin = false;
-        doUser = false;
-        doPass = false;
-        usernameDone = false;
-        passwordDone = false;
-        userComplete = false;
-        passComplete = false;
-        activateUser = false;
-        verifyCreateNewAcc = false;
-        verifiedClick = false;
 
         updateNewPassword = false;
         updateNewBalance = false;
@@ -185,17 +116,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         updateBalanceOnce = true;
         updatePasswordOnce = true;
 
-        doBalance = false;
-
-        doWithdraw = false;
-        withdrawTyping = false;
-        withdrawDone = false;
-        addWithdraw = true;
-
-        doDeposit = false;
-        depositTyping = false;
-        depositDone = false;
-        addDeposit = true;
+        newAdminBal = 0;
 
         logOut = false;
         goBack = false;
@@ -431,6 +352,10 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         }
     }
 
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
     public void doAdmin(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         admin1 = new Admin(user.getUsername(), user.getPassword());
@@ -560,69 +485,69 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
 
         if (e.getButton() == 1) {
             if (login.contains(clicked)) {
-                showLogIn = !showLogIn;
+                UI.setShowLogIn(!UI.isShowLogIn());
             }
             if (admin.contains(clicked)) {
                 showAdmin = !showAdmin;
             }
-            if (usernameBox.contains(clicked)) {
-                doUser = !doUser;
+            if (UI.getUsernameBox().contains(clicked)) {
+                UI.setDoUser(!UI.isDoUser());
             }
-            if (passwordBox.contains(clicked)) {
-                doPass = !doPass;
+            if (UI.getPasswordBox().contains(clicked)) {
+                UI.setDoPass(!UI.isDoPass());
             }
-            if (!showLogIn && !doBalance && !doWithdraw && !doDeposit && !showAdmin && doAdmin) {
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !showAdmin && doAdmin) {
                 if (updateBalance.contains(clicked)) {
                     updateNewBalance = true;
                 }
             }
-            if (!showLogIn && !doBalance && !doWithdraw && !doDeposit && !showAdmin && doAdmin) {
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !showAdmin && doAdmin) {
                 if (updatePassword.contains(clicked)) {
                     updateNewPassword = true;
                 }
             }
-            if (!showLogIn && !doBalance && !doWithdraw && showAdmin) {
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && showAdmin) {
                 if (adminNameBox.contains(clicked)) {
                     doAdminUser = !doAdminUser;
                     adminUserComplete = false;
                 }
             }
-            if (!showLogIn && !doBalance && !doWithdraw && showAdmin) {
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && showAdmin) {
                 if (adminPassBox.contains(clicked)) {
                     doAdminPass = !doAdminPass;
                     adminPassComplete = false;
                 }
             }
-            if (activateUser) {
-                if (withdraw.contains(clicked)) {
-                    doWithdraw = true;
+            if (UI.isActivateUser()) {
+                if (UI.getWithdraw().contains(clicked)) {
+                    UI.setDoWithdraw(true);
                 }
-                if (balance.contains(clicked)) {
-                    doBalance = true;
+                if (UI.getBalance().contains(clicked)) {
+                    UI.setDoBalance(true);
                 }
-                if (deposit.contains(clicked)) {
-                    doDeposit = true;
+                if (UI.getDeposit().contains(clicked)) {
+                    UI.setDoDeposit(true);
                 }
             }
             if (logOutButton.contains(clicked)) {
                 logOut = true;
             }
-            if (verifyCreateNewAcc) {
-                if (createNewAccount.contains(clicked)) {
-                    verifiedClick = true;
+            if (UI.isVerifyCreateNewAcc()) {
+                if (UI.getCreateNewAccount().contains(clicked)) {
+                    UI.setVerifiedClick(true);
                 }
             }
-            if (doDeposit) {
-                if (depositBox.contains(clicked)) {
-                    depositTyping = !depositTyping;
+            if (UI.isDoDeposit()) {
+                if (UI.getDepositBox().contains(clicked)) {
+                    UI.setDepositTyping(!UI.isDepositTyping());
                 }
             }
-            if (doWithdraw) {
-                if (withdrawBox.contains(clicked)) {
-                    withdrawTyping = !withdrawTyping;
+            if (UI.isDoWithdraw()) {
+                if (UI.getWithdrawBox().contains(clicked)) {
+                    UI.setWithdrawTyping(!UI.isWithdrawTyping());
                 }
             }
-            if (doDeposit || doBalance || doWithdraw) {
+            if (UI.isDoDeposit() || UI.isDoBalance() || UI.isDoWithdraw()) {
                 if (backButton.contains(clicked)) {
                     goBack = true;
                 }
@@ -632,12 +557,12 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                     goAdminBack = true;
                 }
             }
-            if (!showLogIn && !doBalance && !doWithdraw && !doDeposit && !showAdmin && !doAdmin && updateNewBalance) {
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !showAdmin && !doAdmin && updateNewBalance) {
                 if (updateBalBox.contains(clicked)) {
                     updateBalanceTyping = true;
                 }
             }
-            if (!showLogIn && !doBalance && !doWithdraw && !doDeposit && !showAdmin && !doAdmin && updateNewPassword) {
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !showAdmin && !doAdmin && updateNewPassword) {
                 if (updatePassBox.contains(clicked)) {
                     updatePasswordTyping = true;
                 }
@@ -647,7 +572,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (!showLogIn && !doBalance && !doWithdraw && !doDeposit && !showAdmin && !doAdmin && updateNewPassword){
+        if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !showAdmin && !doAdmin && updateNewPassword){
             if (e.getKeyCode() == 8) { // backspace
                 String userTemp = newAdminPass.substring(0, newAdminPass.length() - 1);
                 newAdminPass = userTemp;
@@ -660,7 +585,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 updatePassDone = true;
             }
         }
-        if (!showLogIn && !doBalance && !doWithdraw && !doDeposit && !showAdmin && !doAdmin && updateNewBalance) {
+        if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !showAdmin && !doAdmin && updateNewBalance) {
             if (e.getKeyCode() == 8) { // backspace
                 String tempTwo = newTempAdminBal.substring(0, newTempAdminBal.length() - 1);
                 newTempAdminBal = tempTwo;
@@ -676,37 +601,37 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 updateBalanceDone = true;
             }
         }
-        if (doUser) {
+        if (UI.isDoUser()) {
             if (e.getKeyCode() == 8) { // backspace
-                String userTemp = username.substring(0, username.length() - 1);
-                username = userTemp;
+                String userTemp = UI.getUsername().substring(0, UI.getUsername().length() - 1);
+                UI.setUsername(userTemp);
             } else {
-                username += e.getKeyChar();
+                UI.setUsername(UI.getUsername() + e.getKeyChar());
             }
         }
-        if (doPass) {
+        if (UI.isDoPass()) {
             if (e.getKeyCode() == 8) { // backspace
-                String passTemp = password.substring(0, password.length() - 1);
-                password = passTemp;
+                String passTemp = UI.getPassword().substring(0, UI.getPassword().length() - 1);
+                UI.setPassword(passTemp);
             } else {
-                password += e.getKeyChar();
+                UI.setPassword(UI.getPassword() + e.getKeyChar());
             }
         }
-        if (doUser) {
+        if (UI.isDoUser()) {
             if (e.getKeyCode() == 10) { // enter
-                doUser = false;
-                userComplete = true;
-                usernameDone = true;
+                UI.setDoUser(false);
+                UI.setUserComplete(true);
+                UI.setUsernameDone(true);
             }
         }
-        if (doPass) {
+        if (UI.isDoPass()) {
             if (e.getKeyCode() == 10) { // enter
-                doPass = false;
-                userComplete = true;
-                passwordDone = true;
+                UI.setDoPass(false);
+                UI.setUserComplete(true);
+                UI.setPasswordDone(true);
             }
         }
-        if (doAdminUser && !doUser && !doPass) {
+        if (doAdminUser && !UI.isDoUser() && !UI.isDoPass()) {
             if (e.getKeyCode() == 8) { // backspace
                 String userTemp = adminUser.substring(0, adminUser.length() - 1);
                 adminUser = userTemp;
@@ -714,7 +639,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 adminUser += e.getKeyChar();
             }
         }
-        if (doAdminPass && !doUser && !doPass) {
+        if (doAdminPass && !UI.isDoUser() && !UI.isDoPass()) {
             if (e.getKeyCode() == 8) { // backspace
                 String passTemp = adminPass.substring(0, adminPass.length() - 1);
                 adminPass = passTemp;
@@ -722,48 +647,48 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 adminPass += e.getKeyChar();
             }
         }
-        if (doAdminUser && !doUser && !doPass) {
+        if (doAdminUser && !UI.isDoUser() && !UI.isDoPass()) {
             if (e.getKeyCode() == 10) { // Enter key
                 doAdminUser = false;
                 adminUserComplete = true;
             }
         }
-        if (doAdminPass && !doUser && !doPass) {
+        if (doAdminPass && !UI.isDoUser() && !UI.isDoPass()) {
             if (e.getKeyCode() == 10) { // Enter key
                 doAdminPass = false;
                 adminPassComplete = true;
             }
         }
-        if (doDeposit) {
+        if (UI.isDoDeposit()) {
             if (e.getKeyCode() == 8) { // backspace
-                String tempOne = depositTemp.substring(0, depositTemp.length() - 1);
-                depositTemp = tempOne;
+                String tempOne = UI.getDepositTemp().substring(0, UI.getDepositTemp().length() - 1);
+                UI.setDepositTemp(tempOne);
             } else {
                 if (Character.isDigit(e.getKeyChar())) { // can only type int
-                    depositTemp += e.getKeyChar();
+                    UI.setDepositTemp(UI.getDepositTemp() + e.getKeyChar());
                 }
             }
-            depositAmt = Integer.parseInt(depositTemp);
+            UI.setDepositAmt(Integer.parseInt(UI.getDepositTemp()));
         }
-        if (doDeposit) {
+        if (UI.isDoDeposit()) {
             if (e.getKeyCode() == 10) { // enter
-                depositDone = true;
+                UI.setDepositDone(true);
             }
         }
-        if (doWithdraw) {
+        if (UI.isDoWithdraw()) {
             if (e.getKeyCode() == 8) { // backspace
-                String tempTwo = withdrawTemp.substring(0, withdrawTemp.length() - 1);
-                withdrawTemp = tempTwo;
+                String tempTwo = UI.getWithdrawTemp().substring(0, UI.getWithdrawTemp().length() - 1);
+                UI.setWithdrawTemp(tempTwo);
             } else {
                 if (Character.isDigit(e.getKeyChar())) { // can only type int
-                    withdrawTemp += e.getKeyChar();
+                    UI.setWithdrawTemp(UI.getWithdrawTemp() + e.getKeyChar());
                 }
             }
-            withdrawAmt = Integer.parseInt(withdrawTemp);
+            UI.setWithdrawAmt(Integer.parseInt(UI.getWithdrawTemp()));
         }
-        if (doWithdraw) {
+        if (UI.isDoWithdraw()) {
             if (e.getKeyCode() == 10) {
-                withdrawDone = true;
+                UI.setWithdrawDone(true);
             }
         }
 
