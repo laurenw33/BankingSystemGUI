@@ -10,117 +10,33 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
 
     ArrayList<User> users;
     User user;
-    Admin admin1;
+    Admin admin;
     UserInterface UI;
+    AdminInterface AI;
 
-    // rectangles
     Rectangle login;
-    Rectangle admin;
-    Rectangle newAdmin;
-    Rectangle adminNameBox;
-    Rectangle adminPassBox;
-
-
-    // back buttons
-    Rectangle backButton;
-    Rectangle backAdminButton;
-    Rectangle logOutButton;
-
-    // admin function boxes
-    Rectangle updateBalance;
-    Rectangle updatePassword;
-    Rectangle updateBalBox;
-    Rectangle updatePassBox;
-
-    // text
-    String adminUser;
-    String adminPass;
-    String newAdminPass;
-    String newTempAdminBal;
-    String newBalanceFinal;
-    String newPassFinal;
-
-    // int
-    int newAdminBal;
-
-    // booleans
-
-    boolean showAdmin;
-    boolean doAdmin;
-    boolean doAdminUser;
-    boolean doAdminPass;
-    boolean adminUserComplete;
-    boolean adminPassComplete;
-
-    // admin
-    boolean updateNewPassword;
-    boolean updateNewBalance;
-    boolean updatePasswordTyping;
-    boolean updatePassDone;
-    boolean updateBalanceTyping;
-    boolean updateBalanceDone;
-    boolean updateBalanceOnce;
-    boolean updatePasswordOnce;
-
+    Rectangle adminBox;
 
     // back and logout functions
+    Rectangle logOutButton;
+
     boolean logOut;
-    boolean goBack;
-    boolean goAdminBack;
     boolean showIntroMessage;
 
     public DrawPanel() {
         this.addMouseListener(this);
 
         UI = new UserInterface();
-
-        login = new Rectangle(50, 370, 160, 50);
-        admin = new Rectangle(265, 370, 160, 50);
-        newAdmin = new Rectangle();
-        adminNameBox = new Rectangle(90, 170, 290, 30);
-        adminPassBox = new Rectangle(90, 230, 290, 30);
-
-        backButton = new Rectangle(370, 330, 70, 30);
-        backAdminButton = new Rectangle(370, 330, 70, 30);
-        logOutButton = new Rectangle(150, 80, 200, 50);
-
-        updateBalance = new Rectangle(150, 150, 200, 50);
-        updatePassword = new Rectangle(150, 220, 200, 50);
-        updateBalBox = new Rectangle(70, 146, 290, 30);
-        updatePassBox = new Rectangle(70, 146, 290, 30);
-
-        adminUser = "";
-        newTempAdminBal = "";
-        newAdminPass = "";
-        adminPass = "";
-        newBalanceFinal = "";
-        newPassFinal = "";
-
+        AI = new AdminInterface();
 
         users = new ArrayList<>();
 
-        doAdmin = false;
-        doAdminUser = false;
-        doAdminPass = false;
-        adminUserComplete = false;
-        adminPassComplete = false;
+        login = new Rectangle(50, 370, 160, 50);
+        adminBox = new Rectangle(265, 370, 160, 50);
+        logOutButton = new Rectangle(150, 80, 200, 50);
 
-        showAdmin = false;
-
-        updateNewPassword = false;
-        updateNewBalance = false;
-        updatePasswordTyping = false;
-        updatePassDone = false;
-        updateBalanceTyping = false;
-        updateBalanceDone = false;
-        updateBalanceOnce = true;
-        updatePasswordOnce = true;
-
-        newAdminBal = 0;
 
         logOut = false;
-        goBack = false;
-        goAdminBack = false;
         showIntroMessage = true;
     }
 
@@ -136,348 +52,85 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         g2d.drawRect(login.x, login.y, login.width, login.height);
         g.drawString("Login", 100, 400);
 
-        g2d.drawRect(admin.x, admin.y, admin.width, admin.height);
+        g2d.drawRect(adminBox.x, adminBox.y, adminBox.width, adminBox.height);
         g.drawString("Admin", 310, 400);
 
-        if (showLogIn) {
-            doAdmin = false; // only show user login
-            showAdmin = false;
+        if (UI.isShowLogIn()) {
+            AI.setDoAdmin(false);
+            AI.setShowAdmin(false);
+
             showIntroMessage = false;
-            g2d.drawRect(usernameBox.x, usernameBox.y, usernameBox.width, usernameBox.height);
-            g.drawString("username", 90, 163);
-            g2d.drawRect(passwordBox.x, passwordBox.y, passwordBox.width, passwordBox.height);
-            g.drawString("password", 90, 222);
-            g.drawString(username, 95, 190);
-            g.drawString(password, 95, 250);
-            g.drawString("Click the boxes to log in.", 90, 300);
-            g.drawString("Click one box at a time.", 90, 320);
-            g.drawString("Hit enter when you're done.", 90, 340);
-            if (doUser) {
-                g.drawString("Typing...", 332, 163);
-                doPass = false;
-            }
-            if (doPass) {
-                g.drawString("Typing...", 325, 222);
-                doUser = false;
-            }
-            if (userComplete) {
-                g.drawString("Entered!", 322, 163);
-            }
-            if (passComplete) {
-                g.drawString("Entered!", 322, 222);
-            }
-            if (usernameDone && passwordDone) {
-                boolean hasUser = false;
-                boolean hasPass = false;
-                if (!users.isEmpty()) {
-                    for (User u : users) {
-                        if (u.getUsername().equals(username)) {
-                            hasUser = true;
-                            if (u.getPassword().equals(password)) {
-                                showLogIn = false;
-                                activateUser = true;
-                                hasPass = true;
-                            }
-                        }
-                        if (hasUser && hasPass) {
-                            break;
-                        }
-                        if (hasUser && !hasPass) {
-                            g.drawString("Incorrect password. Please retry.", 80, 120);
-                        }
-                        else {
-                            showLogIn = false;
-                            verifyCreateNewAcc = true;
-                        }
-                    }
-                }
-                else {
-                    showLogIn = false;
-                    verifyCreateNewAcc = true;
-                }
-            }
+            UI.showLogin(g, users);
         }
-        if (verifyCreateNewAcc) {
-            g2d.drawRect(createNewAccount.x, createNewAccount.y, createNewAccount.width, createNewAccount.height);
-            g.drawString("We couldn't find your account.", 80, 130);
-            g.drawString("Create a new account?", 118, 190);
+        if (UI.isVerifyCreateNewAcc()) {
+            UI.verifyCreateNewAcc(g);
         }
-        if (verifiedClick) {
-            verifyClick();
+        if (UI.isVerifiedClick()) {
+            UI.setVerifyCreateNewAcc(false);
+            user = new User(UI.getUsername(), UI.getPassword());
+            users.add(user);
+            System.out.println(users);
+            UI.setActivateUser(true);
+            UI.setDoUser(false);
+            UI.setDoPass(false);
         }
-        if (activateUser) {
-            verifiedClick = false;
-            showLogIn = false;
+        if (UI.isActivateUser()) {
             g.drawString("Logged in as: " + user.getUsername(), 5, 20);
             g2d.drawRect(logOutButton.x, logOutButton.y, logOutButton.width, logOutButton.height);
-            g.drawString("Return to login", 168, 110);
-            g2d.drawRect(deposit.x, deposit.y, deposit.width, deposit.height);
-            g.drawString("Deposit", 210, 180);
-            g2d.drawRect(withdraw.x, withdraw.y, withdraw.width, withdraw.height);
-            g.drawString("Withdraw", 205, 250);
-            g2d.drawRect(balance.x, balance.y, balance.width, balance.height);
-            g.drawString("Balance", 210, 320);
+            UI.activateUser(g);
         }
-        if (doDeposit) {
-            activateUser = false;
-            verifiedClick = false;
-            doUser = false;
-            g.drawString("How much would you like to deposit?", 70, 110);
-            g.drawString("Click the box to begin: ", 70, 130);
-            g2d.drawRect(backButton.x, backButton.y, backButton.width, backButton.height);
-            g.drawString("Back", 380, 350);
-            g2d.drawRect(depositBox.x, depositBox.y, depositBox.width, depositBox.height);
-            g.drawString(depositTemp, 74, 170);
-            if (depositTyping) {
-                g.drawString("Typing...", 70, 195);
-            }
-            if (depositDone) {
-                depositTyping = false;
-                if (addDeposit) {
-                    depositFinal = user.deposit(depositAmt);
-                    addDeposit = false;
-                }
-                g.drawString(depositFinal, 70, 195);
-                user.balance();
-            }
+        if (UI.isDoDeposit()) {
+            UI.doDeposit(g, user);
         }
-        if (doBalance) {
-            activateUser = false;
-            verifiedClick = false;
-            g2d.drawRect(backButton.x, backButton.y, backButton.width, backButton.height);
-            g.drawString("Back", 380, 350);
-            g.drawString(user.balance(), 70, 110);
+        if (UI.isDoBalance()) {
+            UI.doBalance(g, user);
         }
-        if (doWithdraw) {
-            activateUser = false;
-            verifiedClick = false;
-            doUser = false;
-            g2d.drawRect(backButton.x, backButton.y, backButton.width, backButton.height);
-            g.drawString("Back", 380, 350);
-            g.drawString("How much would you like to withdraw?", 70, 110);
-            g.drawString("Click the box to begin: ", 70, 130);
-            g2d.drawRect(withdrawBox.x, withdrawBox.y, withdrawBox.width, withdrawBox.height);
-            g.drawString(withdrawTemp, 74, 170);
-            if (withdrawTyping) {
-                g.drawString("Typing...", 70, 195);
-            }
-            if (withdrawDone) {
-                withdrawTyping = false;
-                if (addWithdraw) {
-                    withdrawFinal = user.withdraw(withdrawAmt);
-                    addWithdraw = false;
-                }
-                g.drawString(withdrawFinal, 60, 195);
-                user.balance();
-                withdrawTemp = "";
-            }
+        if (UI.isDoWithdraw()) {
+            UI.doWithdraw(g, user);
         }
-        if (showAdmin) {
-            showLogIn = false;
+        if (AI.isShowAdmin()) {
+            UI.setShowLogIn(false);
             if (!users.isEmpty()) {
-                activateUser = false;
-                doDeposit = false;
-                doBalance = false;
-                doWithdraw = false;
-                adminLogIn(g);
+                UI.setActivateUser(false);
+                UI.setDoDeposit(false);
+                UI.setDoBalance(false);
+                UI.setDoWithdraw(false);
+                UI.setDoPass(false);
+                UI.setDoUser(false);
+                AI.adminLogIn(g, users, user);
             }
             else {
                 g.drawString("You must create a user account.", 70, 110);
             }
         }
-        if (doAdmin) {
-            doAdmin(g);
+        if (AI.isDoAdmin()) {
+            admin = new Admin(user.getUsername(), user.getPassword());
+            g2d.drawRect(logOutButton.x, logOutButton.y, logOutButton.width, logOutButton.height);
+            AI.doAdmin(g, user);
         }
-        if (updateNewBalance) {
-            doAdmin = false;
-            g2d.drawRect(backAdminButton.x, backAdminButton.y, backAdminButton.width, backAdminButton.height);
-            g.drawString("Back", 380, 350);
-            g.drawString("Enter your updated balance.", 70, 110);
-            g.drawString("Click the box to begin: ", 70, 130);
-            g2d.drawRect(updateBalBox.x, updateBalBox.y, updateBalBox.width, updateBalBox.height);
-            g.drawString(newTempAdminBal, 74, 170);
-            if (updateBalanceTyping) {
-                g.drawString("Typing...", 70, 195);
-            }
-            if (updateBalanceDone) {
-                updateBalanceTyping = false;
-                if (updateBalanceOnce) {
-                    newBalanceFinal = admin1.updateBalance(user, newAdminBal);
-                    System.out.println(newBalanceFinal);
-                    updateBalanceOnce = false;
-                }
-                g.drawString(newBalanceFinal, 60, 195);
-            }
+        if (AI.isUpdateNewBalance()) {
+            AI.updateNewBalance(g, user, admin);
         }
-        if (updateNewPassword) {
-            doAdmin = false;
-            g2d.drawRect(backAdminButton.x, backAdminButton.y, backAdminButton.width, backAdminButton.height);
-            g.drawString("Back", 380, 350);
-            g.drawString("Enter your updated password:", 70, 110);
-            g.drawString("Click the box to begin: ", 70, 130);
-            g2d.drawRect(updatePassBox.x, updatePassBox.y, updatePassBox.width, updatePassBox.height);
-            g.drawString(newAdminPass, 74, 170);
-            if (updatePasswordTyping) {
-                g.drawString("Typing...", 70, 195);
-            }
-            if (updatePassDone) {
-                updatePasswordTyping = false;
-                if (updatePasswordOnce) {
-                    newPassFinal = admin1.updatePassword(user, newAdminPass);
-                    updateBalanceOnce = false;
-                }
-                g.drawString(newPassFinal, 70, 195);
-            }
+        if (AI.isUpdateNewPassword()) {
+            AI.updateNewPassword(g, user, admin);
         }
-        if (goAdminBack) {
-            doAdmin = true;
-            updateNewPassword = false;
-            updatePasswordTyping = false;
-            updatePassDone = false;
-            updateNewBalance = false;
-            updateBalanceTyping = false;
-            updateBalanceOnce = true;
-            updateBalanceDone = false;
-            newTempAdminBal = "";
-            newAdminPass = "";
-            newPassFinal = "";
-            newBalanceFinal = "";
-            goAdminBack = false;
+        if (AI.isGoBack()) {
+            AI.goBack();
         }
-        if (goBack) {
-            goBack();
+        if (UI.isGoBack()) {
+            UI.goBack();
+            logOut = false;
+            AI.setShowAdmin(false);
         }
         if (logOut) {
             logOut();
         }
     }
 
-    public ArrayList<User> getUsers() {
-        return users;
-    }
-
-    public void doAdmin(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-        admin1 = new Admin(user.getUsername(), user.getPassword());
-        g.drawString("Logged in as admin for: " + user.getUsername(), 5, 20);
-        g2d.drawRect(updateBalance.x, updateBalance.y, updateBalance.width, updateBalance.height);
-        g2d.drawRect(updatePassword.x, updatePassword.y, updatePassword.width, updatePassword.height);
-        g2d.drawRect(logOutButton.x, logOutButton.y, logOutButton.width, logOutButton.height);
-        g.drawString("Update Balance", 175, 180);
-        g.drawString("Update Password", 170, 250);
-        g.drawString("Return to login", 168, 110);
-    }
-
-    public void adminLogIn(Graphics g) {
-        doPass = false;
-        doUser = false;
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.drawRect(adminNameBox.x, adminNameBox.y, adminNameBox.width, adminNameBox.height);
-        g.drawString("username", 90, 163);
-        g2d.drawRect(adminPassBox.x, adminPassBox.y, adminPassBox.width, adminPassBox.height);
-        g.drawString("password", 90, 222);
-        g.drawString(adminUser, 95, 190);
-        g.drawString(adminPass, 95, 250);
-        g.drawString("Re-enter your login credentials.", 90, 300);
-        if (doAdminUser) {
-            g.drawString("Typing...", 332, 163);
-            doAdminPass = false;
-        }
-        if (doAdminPass) {
-            g.drawString("Typing...", 325, 222);
-            doAdminUser = false;
-        }
-        if (adminUserComplete) {
-            g.drawString("Entered!", 322, 163);
-        }
-        if (adminPassComplete) {
-            g.drawString("Entered!", 322, 222);
-        }
-        if (adminUserComplete && adminPassComplete) {
-            if (adminUser.equals(user.getUsername()) && adminPass.equals(user.getPassword())) {
-                doAdmin = true;
-                showAdmin = false;
-            }
-            if (adminUser.equals(user.getUsername()) && !adminPass.equals(user.getPassword())) {
-                g.drawString("Incorrect password. Please retry.", 80, 120);
-            }
-            else {
-                g.drawString("This user does not exist.", 80, 120);
-            }
-        }
-    }
-
-    public void verifyClick() {
-        verifyCreateNewAcc = false;
-        user = new User(username, password);
-        users.add(user);
-        System.out.println(users);
-        activateUser = true;
-        doUser = false;
-        doPass = false;
-    }
-
-    public void goBack() {
+    public void logOut() { // keep
         logOut = false;
-        showAdmin = false;
-        doDeposit = false;
-        doWithdraw = false;
-        doBalance = false;
-        depositDone = false;
-        verifiedClick = false;
-        activateUser = true;
-        depositTyping = false;
-        withdrawTyping = false;
-        addDeposit = true;
-        addWithdraw = true;
-        withdrawDone = false;
-        goBack = false;
-        depositTemp = "";
-        withdrawTemp = "";
-        withdrawFinal = "";
-    }
-
-    public void logOut() {
-        showAdmin = false;
-        doUser = false;
-        doPass = false;
-        usernameDone = false;
-        passwordDone = false;
-        userComplete = false;
-        passComplete = false;
-        activateUser = false;
-        verifyCreateNewAcc = false;
-        verifiedClick = false;
-        doBalance = false;
-        doWithdraw = false;
-        withdrawTyping = false;
-        withdrawDone = false;
-        addWithdraw = true;
-        doDeposit = false;
-        depositTyping = false;
-        depositDone = false;
-        addDeposit = true;
-        logOut = false;
-        showLogIn = true;
-        username = "";
-        password = "";
-        depositTemp = "";
-        withdrawTemp = "";
-        withdrawFinal = "";
-        doAdmin = false;
-        updateNewPassword = false;
-        updatePasswordTyping = false;
-        updatePassDone = false;
-        updateNewBalance = false;
-        updateBalanceTyping = false;
-        updateBalanceOnce = true;
-        updatePasswordOnce = true;
-        updateBalanceDone = false;
-        newTempAdminBal = "";
-        newAdminPass = "";
-        newPassFinal = "";
-        newBalanceFinal = "";
-        goAdminBack = false;
+        UI.logOut();
+        AI.logOut();
     }
 
     public void mousePressed(MouseEvent e) {
@@ -487,8 +140,8 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (login.contains(clicked)) {
                 UI.setShowLogIn(!UI.isShowLogIn());
             }
-            if (admin.contains(clicked)) {
-                showAdmin = !showAdmin;
+            if (adminBox.contains(clicked)) {
+                AI.setShowAdmin(!AI.isShowAdmin());
             }
             if (UI.getUsernameBox().contains(clicked)) {
                 UI.setDoUser(!UI.isDoUser());
@@ -496,26 +149,26 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (UI.getPasswordBox().contains(clicked)) {
                 UI.setDoPass(!UI.isDoPass());
             }
-            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !showAdmin && doAdmin) {
-                if (updateBalance.contains(clicked)) {
-                    updateNewBalance = true;
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !AI.isShowAdmin() && AI.isDoAdmin()) {
+                if (AI.getUpdateBalance().contains(clicked)) {
+                    AI.setUpdateNewBalance(true);
                 }
             }
-            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !showAdmin && doAdmin) {
-                if (updatePassword.contains(clicked)) {
-                    updateNewPassword = true;
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !AI.isShowAdmin() && AI.isDoAdmin()) {
+                if (AI.getUpdatePassword().contains(clicked)) {
+                    AI.setUpdateNewPassword(true);
                 }
             }
-            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && showAdmin) {
-                if (adminNameBox.contains(clicked)) {
-                    doAdminUser = !doAdminUser;
-                    adminUserComplete = false;
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && AI.isShowAdmin()) {
+                if (AI.getAdminNameBox().contains(clicked)) {
+                    AI.setDoAdminUser(!AI.isDoAdminUser());
+                    AI.setAdminUserComplete(false);
                 }
             }
-            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && showAdmin) {
-                if (adminPassBox.contains(clicked)) {
-                    doAdminPass = !doAdminPass;
-                    adminPassComplete = false;
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && AI.isShowAdmin()) {
+                if (AI.getAdminPassBox().contains(clicked)) {
+                    AI.setDoAdminPass(!AI.isDoAdminPass());
+                    AI.setAdminPassComplete(false);
                 }
             }
             if (UI.isActivateUser()) {
@@ -548,23 +201,23 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 }
             }
             if (UI.isDoDeposit() || UI.isDoBalance() || UI.isDoWithdraw()) {
-                if (backButton.contains(clicked)) {
-                    goBack = true;
+                if (UI.getBackButton().contains(clicked)) {
+                    UI.setGoBack(true);
                 }
             }
-            if (!showAdmin && (updateNewPassword || updateNewBalance)) {
-                if (backAdminButton.contains(clicked)) {
-                    goAdminBack = true;
+            if (!AI.isShowAdmin() && (AI.isUpdateNewPassword() || AI.isUpdateNewBalance())) {
+                if (AI.getBackAdminButton().contains(clicked)) {
+                    AI.setGoBack(true);
                 }
             }
-            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !showAdmin && !doAdmin && updateNewBalance) {
-                if (updateBalBox.contains(clicked)) {
-                    updateBalanceTyping = true;
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !AI.isShowAdmin() && !AI.isDoAdmin() && AI.isUpdateNewBalance()) {
+                if (AI.getUpdateBalBox().contains(clicked)) {
+                    AI.setUpdateBalanceTyping(true);
                 }
             }
-            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !showAdmin && !doAdmin && updateNewPassword) {
-                if (updatePassBox.contains(clicked)) {
-                    updatePasswordTyping = true;
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !AI.isShowAdmin() && !AI.isDoAdmin() && AI.isUpdateNewPassword()) {
+                if (AI.getUpdatePassBox().contains(clicked)) {
+                    AI.setUpdatePasswordTyping(true);
                 }
             }
         }
@@ -572,33 +225,33 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !showAdmin && !doAdmin && updateNewPassword){
+        if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !AI.isShowAdmin() && !AI.isDoAdmin() && AI.isUpdateNewPassword()){
             if (e.getKeyCode() == 8) { // backspace
-                String userTemp = newAdminPass.substring(0, newAdminPass.length() - 1);
-                newAdminPass = userTemp;
+                String userTemp = AI.getNewAdminPass().substring(0, AI.getNewAdminPass().length() - 1);
+                AI.setNewAdminPass(userTemp);
             } else {
-                newAdminPass += e.getKeyChar();
+                AI.setNewAdminPass(AI.getNewAdminPass() + e.getKeyChar());
             }
         }
-        if (updateNewPassword && updatePasswordTyping) {
+        if (AI.isUpdateNewPassword() && AI.isUpdatePasswordTyping()) {
             if (e.getKeyCode() == 10) {
-                updatePassDone = true;
+                AI.setUpdatePassDone(true);
             }
         }
-        if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !showAdmin && !doAdmin && updateNewBalance) {
+        if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !AI.isShowAdmin() && !AI.isDoAdmin() && AI.isUpdateNewBalance()) {
             if (e.getKeyCode() == 8) { // backspace
-                String tempTwo = newTempAdminBal.substring(0, newTempAdminBal.length() - 1);
-                newTempAdminBal = tempTwo;
+                String tempTwo = AI.getNewTempAdminBal().substring(0, AI.getNewTempAdminBal().length() - 1);
+                AI.setNewTempAdminBal(tempTwo);
             } else {
                 if (Character.isDigit(e.getKeyChar())) { // can only type int
-                    newTempAdminBal += e.getKeyChar();
+                    AI.setNewTempAdminBal(AI.getNewTempAdminBal() + e.getKeyChar());
                 }
             }
-            newAdminBal = Integer.parseInt(newTempAdminBal);
+            AI.setNewAdminBal( Integer.parseInt(AI.getNewTempAdminBal()));
         }
-        if (updateNewBalance && updateBalanceTyping) {
+        if (AI.isUpdateNewBalance() && AI.isUpdateBalanceTyping()) {
             if (e.getKeyCode() == 10) {
-                updateBalanceDone = true;
+                AI.setUpdateBalanceDone(true);
             }
         }
         if (UI.isDoUser()) {
@@ -631,32 +284,32 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 UI.setPasswordDone(true);
             }
         }
-        if (doAdminUser && !UI.isDoUser() && !UI.isDoPass()) {
+        if (AI.isDoAdminUser() && !UI.isDoUser() && !UI.isDoPass()) {
             if (e.getKeyCode() == 8) { // backspace
-                String userTemp = adminUser.substring(0, adminUser.length() - 1);
-                adminUser = userTemp;
+                String userTemp = AI.getAdminUser().substring(0, AI.getAdminUser().length() - 1);
+                AI.setAdminUser(userTemp);
             } else {
-                adminUser += e.getKeyChar();
+                AI.setAdminUser(AI.getAdminUser() + e.getKeyChar());
             }
         }
-        if (doAdminPass && !UI.isDoUser() && !UI.isDoPass()) {
+        if (AI.isDoAdminPass() && !UI.isDoUser() && !UI.isDoPass()) {
             if (e.getKeyCode() == 8) { // backspace
-                String passTemp = adminPass.substring(0, adminPass.length() - 1);
-                adminPass = passTemp;
+                String passTemp = AI.getAdminPass().substring(0, AI.getAdminPass().length() - 1);
+                AI.setAdminPass(passTemp);
             } else {
-                adminPass += e.getKeyChar();
+                AI.setAdminPass(AI.getAdminPass() + e.getKeyChar());
             }
         }
-        if (doAdminUser && !UI.isDoUser() && !UI.isDoPass()) {
+        if (AI.isDoAdminUser() && !UI.isDoUser() && !UI.isDoPass()) {
             if (e.getKeyCode() == 10) { // Enter key
-                doAdminUser = false;
-                adminUserComplete = true;
+                AI.setDoAdminUser(false);
+                AI.setAdminUserComplete(true);
             }
         }
-        if (doAdminPass && !UI.isDoUser() && !UI.isDoPass()) {
+        if (AI.isDoAdminPass() && !UI.isDoUser() && !UI.isDoPass()) {
             if (e.getKeyCode() == 10) { // Enter key
-                doAdminPass = false;
-                adminPassComplete = true;
+                AI.setDoAdminPass(false);
+                AI.setAdminPassComplete(true);
             }
         }
         if (UI.isDoDeposit()) {

@@ -8,6 +8,7 @@ public class UserInterface {
     Rectangle usernameBox;
     Rectangle passwordBox;
     Rectangle createNewAccount;
+    Rectangle backButton;
 
     // buttons on user interface
     Rectangle deposit;
@@ -57,11 +58,12 @@ public class UserInterface {
 
     boolean verifyCreateNewAcc; // asks if want to make new account
     boolean verifiedClick; // checks if they clicked that they want to create
+    boolean goBack;
 
     public UserInterface() {
-        drawPanel = new DrawPanel();
         usernameBox = new Rectangle(90, 170, 290, 30);
         passwordBox = new Rectangle(90, 230, 290, 30);
+        backButton = new Rectangle(370, 330, 70, 30);
 
         createNewAccount = new Rectangle(110, 150, 250, 70);
         deposit = new Rectangle(150, 150, 200, 50);
@@ -88,6 +90,7 @@ public class UserInterface {
         activateUser = false;
         verifyCreateNewAcc = false;
         verifiedClick = false;
+        goBack = false;
 
         doBalance = false;
 
@@ -106,11 +109,8 @@ public class UserInterface {
     }
 
 
-    public void showLogin(Graphics g) {
+    public void showLogin(Graphics g, ArrayList<User> users) {
         Graphics2D g2d = (Graphics2D) g;
-        doAdmin = false; // only show user login
-        showAdmin = false;
-        showIntroMessage = false;
         g2d.drawRect(usernameBox.x, usernameBox.y, usernameBox.width, usernameBox.height);
         g.drawString("username", 90, 163);
         g2d.drawRect(passwordBox.x, passwordBox.y, passwordBox.width, passwordBox.height);
@@ -137,8 +137,8 @@ public class UserInterface {
         if (usernameDone && passwordDone) {
             boolean hasUser = false;
             boolean hasPass = false;
-            if (!drawPanel.getUsers().isEmpty()) {
-                for (User u : drawPanel.getUsers()) {
+            if (!users.isEmpty()) {
+                for (User u : users) {
                     if (u.getUsername().equals(username)) {
                         hasUser = true;
                         if (u.getPassword().equals(password)) {
@@ -164,6 +164,150 @@ public class UserInterface {
                 verifyCreateNewAcc = true;
             }
         }
+    }
+
+    public void verifyCreateNewAcc(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+
+        g2d.drawRect(createNewAccount.x, createNewAccount.y, createNewAccount.width, createNewAccount.height);
+        g.drawString("We couldn't find your account.", 80, 130);
+        g.drawString("Create a new account?", 118, 190);
+    }
+
+    public void activateUser(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+        verifiedClick = false;
+        showLogIn = false;
+        g.drawString("Return to login", 168, 110);
+        g2d.drawRect(deposit.x, deposit.y, deposit.width, deposit.height);
+        g.drawString("Deposit", 210, 180);
+        g2d.drawRect(withdraw.x, withdraw.y, withdraw.width, withdraw.height);
+        g.drawString("Withdraw", 205, 250);
+        g2d.drawRect(balance.x, balance.y, balance.width, balance.height);
+        g.drawString("Balance", 210, 320);
+    }
+
+    public void doDeposit(Graphics g, User user){
+        Graphics2D g2d = (Graphics2D) g;
+
+        activateUser = false;
+        verifiedClick = false;
+        doUser = false;
+        g.drawString("How much would you like to deposit?", 70, 110);
+        g.drawString("Click the box to begin: ", 70, 130);
+        g2d.drawRect(backButton.x, backButton.y, backButton.width, backButton.height);
+        g.drawString("Back", 380, 350);
+        g2d.drawRect(depositBox.x, depositBox.y, depositBox.width, depositBox.height);
+        g.drawString(depositTemp, 74, 170);
+        if (depositTyping) {
+            g.drawString("Typing...", 70, 195);
+        }
+        if (depositDone) {
+            depositTyping = false;
+            if (addDeposit) {
+                depositFinal = user.deposit(depositAmt);
+                addDeposit = false;
+            }
+            g.drawString(depositFinal, 70, 195);
+            user.balance();
+        }
+    }
+
+    public void doBalance(Graphics g, User user) {
+        Graphics2D g2d = (Graphics2D) g;
+        activateUser = false;
+        verifiedClick = false;
+        g2d.drawRect(backButton.x, backButton.y, backButton.width, backButton.height);
+        g.drawString("Back", 380, 350);
+        g.drawString(user.balance(), 70, 110);
+    }
+
+    public void doWithdraw(Graphics g, User user) {
+        Graphics2D g2d = (Graphics2D) g;
+        activateUser = false;
+        verifiedClick = false;
+        doUser = false;
+        g2d.drawRect(backButton.x, backButton.y, backButton.width, backButton.height);
+        g.drawString("Back", 380, 350);
+        g.drawString("How much would you like to withdraw?", 70, 110);
+        g.drawString("Click the box to begin: ", 70, 130);
+        g2d.drawRect(withdrawBox.x, withdrawBox.y, withdrawBox.width, withdrawBox.height);
+        g.drawString(withdrawTemp, 74, 170);
+        if (withdrawTyping) {
+            g.drawString("Typing...", 70, 195);
+        }
+        if (withdrawDone) {
+            withdrawTyping = false;
+            if (addWithdraw) {
+                withdrawFinal = user.withdraw(withdrawAmt);
+                addWithdraw = false;
+            }
+            g.drawString(withdrawFinal, 60, 195);
+            user.balance();
+            withdrawTemp = "";
+        }
+    }
+
+    public void goBack() { // keep
+
+        doDeposit = false;
+        doWithdraw = false;
+        doBalance = false;
+        depositDone = false;
+        verifiedClick = false;
+        activateUser = true;
+        depositTyping = false;
+        withdrawTyping = false;
+        addDeposit = true;
+        addWithdraw = true;
+        withdrawDone = false;
+        goBack = false;
+        depositTemp = "";
+        withdrawTemp = "";
+        withdrawFinal = "";
+    }
+
+    public void logOut() {
+        doUser = false;
+        doPass = false;
+        usernameDone = false;
+        passwordDone = false;
+        userComplete = false;
+        passComplete = false;
+        activateUser = false;
+        verifyCreateNewAcc = false;
+        verifiedClick = false;
+        doBalance = false;
+        doWithdraw = false;
+        withdrawTyping = false;
+        withdrawDone = false;
+        addWithdraw = true;
+        doDeposit = false;
+        depositTyping = false;
+        depositDone = false;
+        addDeposit = true;
+        showLogIn = true;
+        username = "";
+        password = "";
+        depositTemp = "";
+        withdrawTemp = "";
+        withdrawFinal = "";
+    }
+
+    public Rectangle getBackButton() {
+        return backButton;
+    }
+
+    public void setBackButton(Rectangle backButton) {
+        this.backButton = backButton;
+    }
+
+    public boolean isGoBack() {
+        return goBack;
+    }
+
+    public void setGoBack(boolean goBack) {
+        this.goBack = goBack;
     }
 
     public Rectangle getUsernameBox() {
