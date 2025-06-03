@@ -15,6 +15,8 @@ public class AdminInterface {
     Rectangle updatePassword;
     Rectangle updateBalBox;
     Rectangle updatePassBox;
+    Rectangle deleteAccount;
+    Rectangle confirmDelete;
 
     // text
     String adminUser;
@@ -47,6 +49,10 @@ public class AdminInterface {
     boolean updateBalanceDone;
     boolean updateBalanceOnce;
     boolean updatePasswordOnce;
+    boolean updateDeleteAccount;
+    boolean deleteAccountConfirmed;
+
+    User u;
 
     public AdminInterface() {
         newAdmin = new Rectangle();
@@ -59,6 +65,8 @@ public class AdminInterface {
         updatePassword = new Rectangle(150, 220, 200, 50);
         updateBalBox = new Rectangle(70, 146, 290, 30);
         updatePassBox = new Rectangle(70, 146, 290, 30);
+        deleteAccount = new Rectangle(150, 290, 200, 50);
+        confirmDelete = new Rectangle(110, 150, 250, 70);
 
         adminUser = "";
         newTempAdminBal = "";
@@ -84,11 +92,13 @@ public class AdminInterface {
         updateBalanceDone = false;
         updateBalanceOnce = true;
         updatePasswordOnce = true;
+        updateDeleteAccount = false;
+        deleteAccountConfirmed = false;
 
         newAdminBal = 0;
     }
 
-    public void adminLogIn(Graphics g, ArrayList<User> users, User user) {
+    public void adminLogIn(Graphics g, ArrayList<User> users) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawRect(adminNameBox.x, adminNameBox.y, adminNameBox.width, adminNameBox.height);
         g.drawString("username", 90, 163);
@@ -111,31 +121,34 @@ public class AdminInterface {
         if (adminPassComplete) {
             g.drawString("Entered!", 322, 222);
         }
-        if (adminUserComplete && adminPassComplete) {
-            if (adminUser.equals(user.getUsername()) && adminPass.equals(user.getPassword())) {
-                doAdmin = true;
-                showAdmin = false;
-            }
-            if (adminUser.equals(user.getUsername()) && !adminPass.equals(user.getPassword())) {
-                g.drawString("Incorrect password. Please retry.", 80, 120);
-            }
-            else {
-                g.drawString("This user does not exist.", 80, 120);
+        for (User user : users) {
+            if (adminUserComplete && adminPassComplete) {
+                if (adminUser.equals(user.getUsername()) && adminPass.equals(user.getPassword())) {
+                    doAdmin = true;
+                    showAdmin = false;
+                    u = user;
+                }
+                if (adminUser.equals(user.getUsername()) && !adminPass.equals(user.getPassword())) {
+                    g.drawString("Incorrect password. Please retry.", 80, 120);
+                } else {
+                    g.drawString("This user does not exist.", 80, 120);
+                }
             }
         }
     }
 
-    public void doAdmin(Graphics g, User user) {
+    public void doAdmin(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g.drawString("Logged in as admin for: " + user.getUsername(), 5, 20);
+        g.drawString("Logged in as admin for: " + u.getUsername(), 5, 20);
         g2d.drawRect(updateBalance.x, updateBalance.y, updateBalance.width, updateBalance.height);
         g2d.drawRect(updatePassword.x, updatePassword.y, updatePassword.width, updatePassword.height);
         g.drawString("Update Balance", 175, 180);
         g.drawString("Update Password", 170, 250);
         g.drawString("Return to login", 168, 110);
-    }
+        g2d.drawRect(deleteAccount.x, deleteAccount.y, deleteAccount.width, deleteAccount.height);
+        g.drawString("Delete Account", 190, 320);    }
 
-    public void updateNewBalance(Graphics g, User user, Admin admin) {
+    public void updateNewBalance(Graphics g, Admin admin) {
         Graphics2D g2d = (Graphics2D) g;
         doAdmin = false;
         g2d.drawRect(backAdminButton.x, backAdminButton.y, backAdminButton.width, backAdminButton.height);
@@ -150,11 +163,11 @@ public class AdminInterface {
         if (updateBalanceDone) {
             updateBalanceTyping = false;
             if (updateBalanceOnce) {
-                newBalanceFinal = admin.updateBalance(user, newAdminBal);
-                System.out.println(newBalanceFinal);
+                newBalanceFinal = admin.updateBalance(u, newAdminBal);
                 updateBalanceOnce = false;
             }
             g.drawString(newBalanceFinal, 60, 195);
+            newTempAdminBal = "";
         }
     }
 
@@ -174,9 +187,29 @@ public class AdminInterface {
             updatePasswordTyping = false;
             if (updatePasswordOnce) {
                 newPassFinal = admin.updatePassword(user, newAdminPass);
-                updateBalanceOnce = false;
+                updatePasswordOnce = false;
             }
             g.drawString(newPassFinal, 70, 195);
+            newAdminPass = "";
+        }
+    }
+
+    public void deleteAccount(Graphics g, ArrayList<User> users, Admin admin) {
+        Graphics2D g2d = (Graphics2D) g;
+        doAdmin = false;
+        g2d.drawRect(backAdminButton.x, backAdminButton.y, backAdminButton.width, backAdminButton.height);
+        g.drawString("Back", 380, 350);
+
+        g2d.drawRect(confirmDelete.x, confirmDelete.y, confirmDelete.width, confirmDelete.height);
+        g.drawString("Confirm Delete?", 118, 190);
+
+        if (deleteAccountConfirmed) {
+            for (int i = 0; i < users.size(); i++) {
+                if (users.get(i).getUsername().equals(admin.getUsername()) && users.get(i).getPassword().equals(admin.getUsername())) {
+                    users.remove(i);
+                }
+            }
+            g.drawString("Account has been deleted.", 80, 130);
         }
     }
 
@@ -211,6 +244,38 @@ public class AdminInterface {
         newAdminPass = "";
         newPassFinal = "";
         newBalanceFinal = "";
+    }
+
+    public Rectangle getDeleteAccount() {
+        return deleteAccount;
+    }
+
+    public void setDeleteAccount(Rectangle deleteAccount) {
+        this.deleteAccount = deleteAccount;
+    }
+
+    public Rectangle getConfirmDelete() {
+        return confirmDelete;
+    }
+
+    public void setConfirmDelete(Rectangle confirmDelete) {
+        this.confirmDelete = confirmDelete;
+    }
+
+    public boolean isUpdateDeleteAccount() {
+        return updateDeleteAccount;
+    }
+
+    public void setUpdateDeleteAccount(boolean updateDeleteAccount) {
+        this.updateDeleteAccount = updateDeleteAccount;
+    }
+
+    public boolean isDeleteAccountConfirmed() {
+        return deleteAccountConfirmed;
+    }
+
+    public void setDeleteAccountConfirmed(boolean deleteAccountConfirmed) {
+        this.deleteAccountConfirmed = deleteAccountConfirmed;
     }
 
     public boolean isGoBack() {

@@ -210,6 +210,7 @@ public class UserInterface {
             }
             g.drawString(depositFinal, 70, 195);
             user.balance();
+            depositTemp = "";
         }
     }
 
@@ -248,8 +249,7 @@ public class UserInterface {
         }
     }
 
-    public void goBack() { // keep
-
+    public void goBack() {
         doDeposit = false;
         doWithdraw = false;
         doBalance = false;

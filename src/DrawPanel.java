@@ -97,7 +97,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 UI.setDoWithdraw(false);
                 UI.setDoPass(false);
                 UI.setDoUser(false);
-                AI.adminLogIn(g, users, user);
+                AI.adminLogIn(g, users);
             }
             else {
                 g.drawString("You must create a user account.", 70, 110);
@@ -106,13 +106,16 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         if (AI.isDoAdmin()) {
             admin = new Admin(user.getUsername(), user.getPassword());
             g2d.drawRect(logOutButton.x, logOutButton.y, logOutButton.width, logOutButton.height);
-            AI.doAdmin(g, user);
+            AI.doAdmin(g);
         }
         if (AI.isUpdateNewBalance()) {
-            AI.updateNewBalance(g, user, admin);
+            AI.updateNewBalance(g, admin);
         }
         if (AI.isUpdateNewPassword()) {
             AI.updateNewPassword(g, user, admin);
+        }
+        if (AI.isUpdateDeleteAccount()) {
+            AI.deleteAccount(g, users, admin);
         }
         if (AI.isGoBack()) {
             AI.goBack();
@@ -171,6 +174,11 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                     AI.setAdminPassComplete(false);
                 }
             }
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && AI.isShowAdmin()) {
+                if (AI.getDeleteAccount().contains(clicked)) {
+                    AI.setUpdateDeleteAccount(true);
+                }
+            }
             if (UI.isActivateUser()) {
                 if (UI.getWithdraw().contains(clicked)) {
                     UI.setDoWithdraw(true);
@@ -205,7 +213,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                     UI.setGoBack(true);
                 }
             }
-            if (!AI.isShowAdmin() && (AI.isUpdateNewPassword() || AI.isUpdateNewBalance())) {
+            if (!AI.isShowAdmin() && (AI.isUpdateNewPassword() || AI.isUpdateNewBalance() || AI.isUpdateDeleteAccount())) {
                 if (AI.getBackAdminButton().contains(clicked)) {
                     AI.setGoBack(true);
                 }
@@ -218,6 +226,11 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !AI.isShowAdmin() && !AI.isDoAdmin() && AI.isUpdateNewPassword()) {
                 if (AI.getUpdatePassBox().contains(clicked)) {
                     AI.setUpdatePasswordTyping(true);
+                }
+            }
+            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && !UI.isDoDeposit() && !AI.isShowAdmin() && !AI.isDoAdmin() && AI.isUpdateDeleteAccount()) {
+                if (AI.getConfirmDelete().contains(clicked)) {
+                    AI.setDeleteAccountConfirmed(true);
                 }
             }
         }
@@ -312,7 +325,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                 AI.setAdminPassComplete(true);
             }
         }
-        if (UI.isDoDeposit()) {
+        if (UI.isDoDeposit()) { // typing the string for amt want to deposit
             if (e.getKeyCode() == 8) { // backspace
                 String tempOne = UI.getDepositTemp().substring(0, UI.getDepositTemp().length() - 1);
                 UI.setDepositTemp(tempOne);
@@ -323,7 +336,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             }
             UI.setDepositAmt(Integer.parseInt(UI.getDepositTemp()));
         }
-        if (UI.isDoDeposit()) {
+        if (UI.isDoDeposit()) { // done typing deposit
             if (e.getKeyCode() == 10) { // enter
                 UI.setDepositDone(true);
             }
