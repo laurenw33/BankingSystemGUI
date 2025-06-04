@@ -58,6 +58,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         if (UI.isShowLogIn()) {
             AI.setDoAdmin(false);
             AI.setShowAdmin(false);
+            AI.logOut();
 
             showIntroMessage = false;
             UI.showLogin(g, users);
@@ -89,6 +90,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             UI.doWithdraw(g, user);
         }
         if (AI.isShowAdmin()) {
+            UI.logOut();
             UI.setShowLogIn(false);
             if (!users.isEmpty()) {
                 UI.setActivateUser(false);
@@ -116,6 +118,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
         }
         if (AI.isUpdateDeleteAccount()) {
             AI.deleteAccount(g, users, admin);
+            System.out.println(users);
         }
         if (AI.isGoBack()) {
             AI.goBack();
@@ -126,15 +129,12 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             AI.setShowAdmin(false);
         }
         if (logOut) {
-            logOut();
+            UI.logOut();
+            AI.logOut();
+            logOut = false;
         }
     }
 
-    public void logOut() { // keep
-        logOut = false;
-        UI.logOut();
-        AI.logOut();
-    }
 
     public void mousePressed(MouseEvent e) {
         Point clicked = e.getPoint();
@@ -174,7 +174,7 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
                     AI.setAdminPassComplete(false);
                 }
             }
-            if (!UI.isShowLogIn() && !UI.isDoBalance() && !UI.isDoWithdraw() && AI.isShowAdmin()) {
+            if (AI.isDoAdmin()) {
                 if (AI.getDeleteAccount().contains(clicked)) {
                     AI.setUpdateDeleteAccount(true);
                 }
@@ -192,6 +192,11 @@ class DrawPanel extends JPanel implements MouseListener, KeyListener {
             }
             if (logOutButton.contains(clicked)) {
                 logOut = true;
+            }
+            if (AI.isDeleteAccountConfirmed()) {
+                if (AI.getLogOutFinal().contains(clicked)) {
+                    logOut = true;
+                }
             }
             if (UI.isVerifyCreateNewAcc()) {
                 if (UI.getCreateNewAccount().contains(clicked)) {

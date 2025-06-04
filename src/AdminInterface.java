@@ -17,6 +17,7 @@ public class AdminInterface {
     Rectangle updatePassBox;
     Rectangle deleteAccount;
     Rectangle confirmDelete;
+    Rectangle logOutFinal;
 
     // text
     String adminUser;
@@ -67,6 +68,8 @@ public class AdminInterface {
         updatePassBox = new Rectangle(70, 146, 290, 30);
         deleteAccount = new Rectangle(150, 290, 200, 50);
         confirmDelete = new Rectangle(110, 150, 250, 70);
+
+        logOutFinal = new Rectangle(370, 330, 70, 30);
 
         adminUser = "";
         newTempAdminBal = "";
@@ -142,11 +145,32 @@ public class AdminInterface {
         g.drawString("Logged in as admin for: " + u.getUsername(), 5, 20);
         g2d.drawRect(updateBalance.x, updateBalance.y, updateBalance.width, updateBalance.height);
         g2d.drawRect(updatePassword.x, updatePassword.y, updatePassword.width, updatePassword.height);
+        g2d.drawRect(deleteAccount.x, deleteAccount.y, deleteAccount.width, deleteAccount.height);
         g.drawString("Update Balance", 175, 180);
         g.drawString("Update Password", 170, 250);
         g.drawString("Return to login", 168, 110);
-        g2d.drawRect(deleteAccount.x, deleteAccount.y, deleteAccount.width, deleteAccount.height);
-        g.drawString("Delete Account", 190, 320);    }
+        g.drawString("Delete Account", 180, 320);
+    }
+
+    public void deleteAccount(Graphics g, ArrayList<User> users, Admin admin) {
+        Graphics2D g2d = (Graphics2D) g;
+        doAdmin = false;
+        g2d.drawRect(logOutFinal.x, logOutFinal.y, logOutFinal.width, logOutFinal.height);
+        g.drawString("Back", 380, 350);
+
+        g2d.drawRect(confirmDelete.x, confirmDelete.y, confirmDelete.width, confirmDelete.height);
+        g.drawString("Confirm Delete?", 140, 190);
+
+        if (deleteAccountConfirmed) {
+            for (int i = 0; i < users.size(); i++) {
+                if (users.get(i).getUsername().equals(admin.getUsername()) && users.get(i).getPassword().equals(admin.getPassword())) {
+                    users.remove(i);
+                    break;
+                }
+            }
+            g.drawString("Account has been deleted.", 80, 130);
+        }
+    }
 
     public void updateNewBalance(Graphics g, Admin admin) {
         Graphics2D g2d = (Graphics2D) g;
@@ -194,25 +218,6 @@ public class AdminInterface {
         }
     }
 
-    public void deleteAccount(Graphics g, ArrayList<User> users, Admin admin) {
-        Graphics2D g2d = (Graphics2D) g;
-        doAdmin = false;
-        g2d.drawRect(backAdminButton.x, backAdminButton.y, backAdminButton.width, backAdminButton.height);
-        g.drawString("Back", 380, 350);
-
-        g2d.drawRect(confirmDelete.x, confirmDelete.y, confirmDelete.width, confirmDelete.height);
-        g.drawString("Confirm Delete?", 118, 190);
-
-        if (deleteAccountConfirmed) {
-            for (int i = 0; i < users.size(); i++) {
-                if (users.get(i).getUsername().equals(admin.getUsername()) && users.get(i).getPassword().equals(admin.getUsername())) {
-                    users.remove(i);
-                }
-            }
-            g.drawString("Account has been deleted.", 80, 130);
-        }
-    }
-
     public void goBack() {
         doAdmin = true;
         updateNewPassword = false;
@@ -222,6 +227,8 @@ public class AdminInterface {
         updateBalanceTyping = false;
         updateBalanceOnce = true;
         updateBalanceDone = false;
+        deleteAccountConfirmed = false;
+        updateDeleteAccount = false;
         newTempAdminBal = "";
         newAdminPass = "";
         newPassFinal = "";
@@ -240,10 +247,20 @@ public class AdminInterface {
         updateBalanceOnce = true;
         updatePasswordOnce = true;
         updateBalanceDone = false;
+        updateDeleteAccount = false;
+        deleteAccountConfirmed = false;
         newTempAdminBal = "";
         newAdminPass = "";
         newPassFinal = "";
         newBalanceFinal = "";
+    }
+
+    public Rectangle getLogOutFinal() {
+        return logOutFinal;
+    }
+
+    public void setLogOutFinal(Rectangle logOutFinal) {
+        this.logOutFinal = logOutFinal;
     }
 
     public Rectangle getDeleteAccount() {
